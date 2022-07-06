@@ -6,17 +6,19 @@ const problems = new mongoose.Schema({
   desc: {
     type: String,
   },
-
+  userCreated:{
+    type:String,
+  },
   testInput: {
     type: String,
   },
-  testOutPut: {
+  testOutput: {
     type: String,
   },
   realInput: {
     type: String,
   },
-  realOutPut: {
+  realOutput: {
     type: String,
   },
 });
