@@ -2,11 +2,10 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { userContext } from "./context/userContext";
 const App = () => {
   const [user, setUser] = useState(null);
-
   useEffect(() => {
     const getUser = () => {
       fetch("http://localhost:3001/auth/login/success", {
@@ -31,17 +30,18 @@ const App = () => {
     };
     getUser();
   }, []);
-
   return (
+    <userContext.Provider value={user}>
+
     <BrowserRouter>
       <div>
-        <Navbar user={user} />
+        <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
           <Route
             path="/login"
             element={user ? <Navigate to="/" /> : <Login />}
-          />
+            />
           <Route
             path="/post/:id"
             element={user ? <Home /> : <Navigate to="/login" />}
@@ -49,6 +49,7 @@ const App = () => {
         </Routes>
       </div>
     </BrowserRouter>
+            </userContext.Provider>
   );
 };
 
