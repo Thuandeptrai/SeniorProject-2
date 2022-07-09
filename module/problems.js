@@ -6,6 +6,14 @@ const problems = new mongoose.Schema({
   desc: {
     type: String,
   },
+  title:
+  {
+    type:String,
+  },
+  ans:{
+    type:Array,
+    default:[]
+  },
   userCreated:{
     type:String,
   },

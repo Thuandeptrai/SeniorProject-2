@@ -8,9 +8,11 @@ const verifyTokenAndAuthorization = async (req, res, next) => {
   }
 };
 const verifyUserIsAdmin = async (req, res, next) => {
+
   if (req.user) {
     const userId = req.user.id;
     const IsAdmin = await User.findOne({ id: userId });
+    console.log(IsAdmin)
     if (IsAdmin.isAdmin) {
       next();
     } else {

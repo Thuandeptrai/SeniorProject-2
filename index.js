@@ -32,7 +32,6 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,7 +48,7 @@ app.get("/", verifyUserIsAdmin, (req, res) => {
 });
 
 app.use("/auth", authRoute);
-app.post("/Testcompiler", verifyTokenAndAuthorization, async (req, res) => {
+app.post("/testcompiler", verifyTokenAndAuthorization, async (req, res) => {
   code = req.body.code;
   lang = req.body.lang;
   problemId = req.body.problemId;
@@ -99,11 +98,15 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
   const testInput = req.body.testInput;
   const testOutput = req.body.testOutPut;
   const realInput = req.body.realInput;
+  const title = req.body.title;
+  
   const realOutput = req.body.realOutput;
   const newProb = new Prob({
     id,
     desc: descript,
     userCreated,
+    title,
+
     testInput,
     testOutput,
     realInput,
@@ -120,5 +123,12 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
       res.status(500).json("Error");
     });
 });
+app.get("/problem", verifyTokenAndAuthorization, async (req,res) =>
+{
+  const filter = {};
+  const Problem =  await Prob.find({})
+  console.log(Problem)
+    res.status(200).json("okey")
 
+})
 app.listen(3001);
