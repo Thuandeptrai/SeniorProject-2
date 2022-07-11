@@ -11,9 +11,8 @@ const verifyUserIsAdmin = async (req, res, next) => {
 
   if (req.user) {
     const userId = req.user.id;
-    const IsAdmin = await User.findOne({ id: userId });
-    console.log(IsAdmin)
-    if (IsAdmin.isAdmin) {
+    const getUser = await User.findOne({ id: userId });
+    if (getUser.isAdmin) {
       next();
     } else {
       res.status(403).json("You are not allowed");

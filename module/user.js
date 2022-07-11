@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
         type: Array,
     },
     problemWrong:{
-        type: Array
+        type: Array,
     },
     isAdmin:{
       type: Boolean,

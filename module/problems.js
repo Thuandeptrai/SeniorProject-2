@@ -29,6 +29,10 @@ const problems = new mongoose.Schema({
   realOutput: {
     type: String,
   },
+  notAns:{
+    type:Array,
+    default:[]
+  }
 });
 const Prob = mongoose.model("problems", problems);
 module.exports = Prob;

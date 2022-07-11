@@ -16,7 +16,12 @@ const {
 } = require("./verifyToken");
 const Prob = require("./module/problems");
 app.use(
-  cookieSession({ name: "session", keys: ["Test"], maxAge: 24 * 60 * 60 * 100 })
+  cookieSession({
+    name: "session",
+    keys: ["Test"],
+    maxAge: 24 * 60 * 60 * 100,
+    sameSite: "Lax",
+  })
 );
 
 mongoose
@@ -54,7 +59,8 @@ app.post("/testcompiler", verifyTokenAndAuthorization, async (req, res) => {
   problemId = req.body.problemId;
   const problem = await Prob.findOne({ id: problemId });
   const myArry = problem.testInput.split(" ");
-
+  const ans = problem.testOutput.split(" ");
+  let correct = 0;
   try {
     for (let i = 0; i < myArry.length; i++) {
       let stdin = myArry[i];
@@ -78,14 +84,15 @@ app.post("/testcompiler", verifyTokenAndAuthorization, async (req, res) => {
           }
         )
         .then(async (data) => {
-          if(data.data.output === myArry[i])
-          {
-            console.log("Oke")
+          if (data.data.output === ans[i]) {
+            correct++;
           }
         });
-      if (i == 2) {
-        res.status(200).json("oke");
-      }
+    }
+    if (correct == myArry.length) {
+      res.status(200).json("Passed");
+    } else {
+      res.status(200).json("You are not passed");
     }
   } catch (err) {
     res.status(500).json(err);
@@ -99,14 +106,12 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
   const testOutput = req.body.testOutPut;
   const realInput = req.body.realInput;
   const title = req.body.title;
-  
   const realOutput = req.body.realOutput;
   const newProb = new Prob({
     id,
     desc: descript,
     userCreated,
     title,
-
     testInput,
     testOutput,
     realInput,
@@ -123,12 +128,146 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
       res.status(500).json("Error");
     });
 });
-app.get("/problem", verifyTokenAndAuthorization, async (req,res) =>
-{
-  const filter = {};
-  const Problem =  await Prob.find({})
-  console.log(Problem)
-    res.status(200).json("okey")
+app.get("/problem/:id", verifyTokenAndAuthorization, async (req, res) => {
+  const ProbId = req.params;
+  const Problem = await Prob.find({}).skip(ProbId.id);
+  res.status(200).json(Problem);
+});
 
-})
+app.get("/singleproblem/:id", verifyTokenAndAuthorization, async (req, res) => {
+  const singProb = req.params.id;
+
+  const getsingleProb = await Prob.find({ id: singProb });
+  try {
+    if (getsingleProb.length !== 0) {
+      const { realInput, realOutput, ...others } = getsingleProb[0]._doc;
+      res.status(200).json(others);
+    } else {
+      res.status(404).json("Not Found");
+    }
+  } catch (err) {
+    res.status(404).json(err.message);
+  }
+});
+
+app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
+  code = req.body.code;
+  lang = req.body.lang;
+  user = req.user;
+  problemId = req.body.problemId;
+
+  const problem = await Prob.findOne({ id: problemId });
+  const myArry = problem.realInput.split(" ");
+  const ans = problem.realOutput.split(" ");
+  let correct = 0;
+  try {
+    for (let i = 0; i < myArry.length; i++) {
+      let stdin = myArry[i];
+      await axios
+        .post(
+          "https://www.jdoodle.com/engine/execute",
+          {
+            script: code,
+            args: null,
+            stdin: stdin,
+            language: lang,
+            libs: [],
+            versionIndex: 1,
+            projectKey: 1001,
+            hasInputFiles: false,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(async (data) => {
+          if (data.data.output === ans[i]) {
+            correct++;
+          }
+        });
+    }
+    if (correct === ans.length) {
+      const userId = req.user.id;
+      const getUser = await User.findOne({ id: userId });
+      let solved = problem.ans;
+      let userSolved = getUser.problemSolved;
+      let getUnSolved = getUser.problemWrong
+      getUnSolved = getUnSolved.filter(item => !problemId.includes(item.Problem))
+      if (userSolved === null || userSolved.length === 0) {
+        userSolved = [];
+        userSolved.push(problemId);
+      } else if (!userSolved.includes(problemId)) {
+        userSolved.push(problemId);
+      }
+
+      if (!solved.includes(getUser.id)) {
+        solved.push(getUser.id);
+      }
+
+      let update = await Prob.findOneAndUpdate(
+        { id: problemId },
+        { $set: { ans: solved } },
+        { new: true }
+      );
+
+      let update1 = await User.findOneAndUpdate(
+        { id: userId },
+        { $set: { problemSolved: userSolved } },
+        { new: true }
+      );  
+      let updateUser = await User.findOneAndUpdate(
+        { id: userId },
+        { $set: { problemWrong: getUnSolved } },
+        { new: true }
+      );
+
+      res.status(200).json(`${correct}/${ans.length}`);
+    } else {
+      const userId = req.user.id;
+      const getUser = await User.findOne({ id: userId });
+      let userUnSolved = getUser.problemWrong;
+      if (userUnSolved === null || userUnSolved.length === 0) {
+        userUnSolved = [];
+        let prob = { Problem: problemId, Ans: correct };
+        userUnSolved.push(prob);
+        let update1 = await User.findOneAndUpdate(
+          { id: userId },
+          { $set: { problemWrong: userUnSolved } },
+          { new: true }
+        );
+      } else {
+        let flag = 0;
+        for (let i = 0; i < userUnSolved.length; i++) {
+          if (userUnSolved[i].Problem === problemId) {
+            flag++;
+            if (userUnSolved[i].Ans < correct) {
+              userUnSolved[i].Ans = correct;
+            }
+          }
+        }
+        if (flag === 0) {
+          let prob = { Problem: problemId, Ans: correct };
+          userUnSolved.push(prob);
+          let update1 = await User.findOneAndUpdate(
+            { id: userId },
+            { $set: { problemWrong: userUnSolved } },
+            { new: true }
+          );
+        } else {
+          let update1 = await User.findOneAndUpdate(
+            { id: userId },
+            { $set: { problemWrong: userUnSolved } },
+            { new: true }
+          );
+        }
+      }
+
+      res.status(200).json(`${correct}/${ans.length}`);
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 app.listen(3001);
