@@ -23,7 +23,9 @@ const Navbar = () => {
     setText(txt);
     setDropDown(true);
   };
-  const user1 = useContext(userContext);
+  const user = useContext(userContext)
+
+  console.log(user)
   return (
     <div className="2xl:container 2xl:mx-auto ">
       <div className="bg-white rounded shadow-lg py-5 px-7">
@@ -47,7 +49,7 @@ const Navbar = () => {
             </h2>
           </div>
           {/* For medium and plus sized devices */}
-          {user1 !== null ? (
+          {user !== null ? (
             <ul className="hidden md:flex flex-auto space-x-2">
               <li
                 onClick={() => logout()}
@@ -158,7 +160,7 @@ const Navbar = () => {
           </div>
         </nav>
         {/* for smaller devcies */}
-        {user1 !== null ? (
+        {user !== null ? (
           <div className="block md:hidden w-full mt-5 ">
             <div
               onClick={() => setDropDown(!dropDown)}

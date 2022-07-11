@@ -1,14 +1,12 @@
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
 const App = () => {
   const [user, setUser] = useState(null);
+  let [isAuth, setIsAuth] = React.useState(null);
   useEffect(() => {
-    const getUser = () => {
-      fetch("http://localhost:3001/auth/login/success", {
+    const getUser = async () => {
+      await fetch("http://localhost:3001/auth/login/success", {
         method: "GET",
         credentials: "include",
         headers: {
@@ -22,34 +20,65 @@ const App = () => {
           throw new Error("authentication has been failed!");
         })
         .then((resObject) => {
+          console.log(resObject);
           setUser(resObject.user);
+          setIsAuth(true);
         })
         .catch((err) => {
+          setIsAuth(false);
           console.log(err);
         });
     };
     getUser();
   }, []);
+  const Home = React.lazy(() => import("./pages/Home"));
+  const Login = React.lazy(() => import("./pages/Login"));
+  const Prob = React.lazy(() => import("./components/Prob"));
+  const Loading = React.lazy(() => import("./pages/Loading"));
+  const Navbar = React.lazy(() => import("./components/Navbar"));
   return (
-    <userContext.Provider value={user}>
-
-    <BrowserRouter>
-      <div>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
-          <Route
-            path="/login"
-            element={user ? <Navigate to="/" /> : <Login />}
-            />
-          <Route
-            path="/post/:id"
-            element={user ? <Home /> : <Navigate to="/login" />}
-          />
-        </Routes>
-      </div>
-    </BrowserRouter>
-            </userContext.Provider>
+    <>
+      <BrowserRouter>
+        <userContext.Provider value={user}>
+          <Suspense fallback={<p> Loading...</p>}>
+            <Navbar />
+            <Routes>
+              <Route
+                path="/"
+                element={user ? <Home /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/login"
+                element={user ? <Navigate to="/" /> : <Login />}
+              />
+              <Route
+                path="/prob/:id"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        <Prob />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+            </Routes>
+          </Suspense>
+        </userContext.Provider>
+      </BrowserRouter>
+    </>
   );
 };
 
