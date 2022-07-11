@@ -29,7 +29,7 @@ const problems = new mongoose.Schema({
   realOutput: {
     type: String,
   },
-  notAns:{
+  wrongAns:{
     type:Array,
     default:[]
   }
