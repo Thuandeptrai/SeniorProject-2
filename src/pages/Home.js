@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 
 function Home() {
   const user = useContext(userContext);
-  console.log();
   const [show, setShow] = useState(null);
   const [prob, setProb] = useState([]);
   const getProblem = axios.create({
@@ -20,7 +19,6 @@ function Home() {
     const getProb = async () => {
       await getProblem.get("http://localhost:3001/problem/10").then((prob) => {
         setProb(prob.data);
-        console.log(prob.data);
       });
     };
     if (prob.length === 0) {

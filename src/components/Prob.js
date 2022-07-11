@@ -1,12 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import axios from "axios";
-import ReCAPTCHA from "react-google-recaptcha";
-import Navbar from "./Navbar";
-import { useContext } from "react";
-import { userContext } from "../context/userContext";
-import { Navigate, useParams } from "react-router-dom";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import Reaptcha from "reaptcha";
+import { userContext } from "../context/userContext";
 
 function Prob() {
   const user = useContext(userContext);
@@ -15,14 +12,15 @@ function Prob() {
   const [lang, setLang] = React.useState("cpp");
   const [token, setToken] = React.useState(false);
   const [singleProb, setsingleProb] = React.useState(null);
-  const [capchaRes, getcapchaRes] = React.useState(null)
+  const [capchaRes, getcapchaRes] = React.useState(null);
   const id = useParams();
   let refContainer = useRef(null);
 
   const onButtonClick = () => {
     // `current` points to the mounted text input element
     refContainer.reset();
-    handleClick()
+    handleClick();
+    setToken(false);
   };
 
   const transport = axios.create({
@@ -41,12 +39,12 @@ function Prob() {
     getProbSingle(id);
   }, []);
   const handleClick = async () => {
- 
     await transport
       .post("http://localhost:3001/Testcompiler", {
         code,
         lang,
-        problemId:id.id
+        problemId: id.id,
+        captcha: capchaRes,
       })
       .then((res) => console.log(res.data))
       .catch((err) => {
@@ -157,15 +155,16 @@ function Prob() {
                 <button className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm">
                   Back
                 </button>
-                <button className="transition duration-150 ease-in-out hover:bg-sky-500 focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm">
-                  Edit Profile
-                </button>
                 <button
                   className={`transition duration-150  mx-8 ease-in-out ${
                     token !== true ? `opacity-50 cursor-not-allowed` : null
                   } focus:outline-none border bg-indigo-700 rounded text-white px-8 py-2 text-sm`}
                   onClick={onButtonClick}
+                  disabled={!token}
                 >
+                  Test
+                </button>
+                <button className="transition duration-150 ease-in-out hover:bg-sky-500 focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm">
                   Submit
                 </button>
               </div>
@@ -205,7 +204,7 @@ function Prob() {
                   ref={(e) => (refContainer = e)}
                   sitekey="6LemUxAUAAAAANmEr4N1jZRIw3xQmfNuHZCd7dqa"
                   onVerify={(recaptchaResponse) => {
-                    getcapchaRes(recaptchaResponse)
+                    getcapchaRes(recaptchaResponse);
                     setToken(true);
                   }}
                 />
