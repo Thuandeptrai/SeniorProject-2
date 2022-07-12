@@ -1,16 +1,18 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
-import axios from "axios"
+import axios from "axios";
 
 const App = () => {
   const [user, setUser] = useState(null);
   let [isAuth, setIsAuth] = React.useState(null);
-  const serverUrl = "https://seniorproject234.herokuapp.com/auth/login/success"
+  const serverUrl = "https://seniorproject234.herokuapp.com/auth/login/success";
 
   useEffect(() => {
     const getUser = async () => {
-   
+      axios.get(serverUrl, { withCredentials: true }).then((res) => {
+        console.log(res.data)
+      });
       await fetch(serverUrl, {
         method: "GET",
         credentials: "include",
