@@ -6,20 +6,14 @@ import axios from "axios"
 const App = () => {
   const [user, setUser] = useState(null);
   let [isAuth, setIsAuth] = React.useState(null);
-  const serverUrl = "https://seniorproject234.herokuapp.com/auth/login/success"
+  const serverUrl = "http://localhost:3001/auth/login/success"
 
   useEffect(() => {
     const getUser = async () => {
-      const instance = axios.create({
-        withCredentials: true,
-      })
-      await instance.get(serverUrl).then((data)=>
-      {
-        console.log(data.data)
-      })
+   
       await fetch(serverUrl, {
         method: "GET",
-        credentials: "same-origin",
+        credentials: "include",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
