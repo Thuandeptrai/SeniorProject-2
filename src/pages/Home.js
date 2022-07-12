@@ -17,7 +17,7 @@ function Home() {
   };
   useEffect(() => {
     const getProb = async () => {
-      await getProblem.get("https://seniorproject234.herokuapp.com/problem/10").then((prob) => {
+      await getProblem.get("http://localhost:3001/problem/10").then((prob) => {
         setProb(prob.data);
       });
     };
