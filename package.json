@@ -17,6 +17,7 @@
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "reaptcha": "^1.12.1",
+    "serve": "^13.0.4",
     "universal-cookie": "^4.0.4",
     "web-vitals": "^2.1.4"
   },
@@ -24,8 +25,8 @@
     "dev": "react-scripts start",
     "start": "npm i && serve -s build",
     "build": "react-scripts build",
-    "heroku-postbuild": "npm run build"},
-
+    "heroku-postbuild": "npm run build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
