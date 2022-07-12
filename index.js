@@ -21,7 +21,8 @@ app.use(
     name: "session",
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
-    secure:false
+    secure: false,
+    sameSite: "none"
   })
 );
 
