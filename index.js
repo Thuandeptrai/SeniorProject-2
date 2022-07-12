@@ -15,14 +15,11 @@ const {
   verifyUserIsAdmin,
 } = require("./verifyToken");
 const Prob = require("./module/problems");
-app.set("https://fontend2223.herokuapp.com", 1);
 app.use(
   cookieSession({
     name: "session",
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
-    secure: false,
-    domain:".herokuapp.com"
   })
 );
 
@@ -46,7 +43,7 @@ app.use(bodyParser.json());
 app.use(
   cors({
     credentials: true,
-    origin: "https://fontend2223.herokuapp.com",
+    origin: "http://localhost:3000",
   })
 );
 app.get("/", verifyUserIsAdmin, (req, res) => {
