@@ -9,7 +9,6 @@ const passport = require("passport");
 const passportSetup = require("./passport");
 const authRoute = require("./routes/auth");
 const User = require("./module/user");
-require('dotenv').config()
 const { v4: uuidv4 } = require("uuid");
 const {
   verifyTokenAndAuthorization,
