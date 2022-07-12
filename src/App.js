@@ -4,6 +4,7 @@ import { userContext } from "./context/userContext";
 const App = () => {
   const [user, setUser] = useState(null);
   let [isAuth, setIsAuth] = React.useState(null);
+  
   useEffect(() => {
     const getUser = async () => {
       await fetch("https://seniorproject234.herokuapp.com/auth/login/success", {
