@@ -22,7 +22,6 @@ app.use(
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
     secure: false,
-    sameSite: "none"
   })
 );
 
