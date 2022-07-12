@@ -12,7 +12,7 @@ const App = () => {
     
       await fetch(serverUrl, {
         method: "GET",
-        credentials: "include",
+        credentials: "same-origin",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
