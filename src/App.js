@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
+import axios from "axios"
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -9,7 +10,13 @@ const App = () => {
 
   useEffect(() => {
     const getUser = async () => {
-    
+      const instance = axios.create({
+        withCredentials: true,
+      })
+      await instance.get(serverUrl).then((data)=>
+      {
+        console.log(data.data)
+      })
       await fetch(serverUrl, {
         method: "GET",
         credentials: "same-origin",
