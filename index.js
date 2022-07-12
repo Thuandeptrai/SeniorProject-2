@@ -41,7 +41,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors(cors({credentials: true, origin: 'https://playful-sunshine-3b1379.netlify.app/'})));
+app.use(
+  cors(
+    
+    { origin:'*', 
+    credentials:true,            //access-control-allow-credentials:true
+    optionSuccessStatus:200,}
+  )
+);
 app.get("/", verifyUserIsAdmin, (req, res) => {
   res.status(200).json("ok");
 });
