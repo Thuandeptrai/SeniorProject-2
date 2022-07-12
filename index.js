@@ -40,7 +40,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({credentials: true, origin: 'https://playful-sunshine-3b1379.netlify.app/login'}));
 app.get("/", verifyUserIsAdmin, (req, res) => {
   res.status(200).json("ok");
 });
