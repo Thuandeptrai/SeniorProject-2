@@ -44,6 +44,7 @@ app.use(
   cors({
     origin: "https://playful-sunshine-3b1379.netlify.app",
     credentials: true,
+    SameSite:"None"
   })
 );
 app.get("/", verifyUserIsAdmin, (req, res) => {
