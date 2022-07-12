@@ -12,6 +12,7 @@ router.get("/login/success", async (req, res) => {
         name: req.user.displayName,
         problemSolved: null,
         problemWrong: null,
+        cookies: req.cookies
       });
       await newUser.save().then(() => {
         res.status(200).json({
@@ -53,6 +54,13 @@ router.get(
   passport.authenticate("google", {
     successRedirect: CLIENT_URL,
     failureRedirect: "/login/failed",
-  })
+  },(req, res, next)=>{
+    // if success
+    if (req.user) {
+        res.redirect("http://localhost:3000");
+    } else {
+        res.redirect("http://localhost:3000/login-failed");
+    }
+    next();})
 );
 module.exports = router;
