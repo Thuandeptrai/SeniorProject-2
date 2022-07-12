@@ -15,21 +15,14 @@ const {
   verifyUserIsAdmin,
 } = require("./verifyToken");
 const Prob = require("./module/problems");
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.headers.origin);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+app.set('https://fontend2223.herokuapp.com/', 1) 
 app.use(
   cookieSession({
     name: "session",
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
-    secure: "none",
-    samSite: "none",
+
+    
   })
 );
 
@@ -52,8 +45,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: true, //included origin as true
     credentials: true,
+    origin: "https://fontend2223.herokuapp.com",
   })
 );
 app.get("/", verifyUserIsAdmin, (req, res) => {
