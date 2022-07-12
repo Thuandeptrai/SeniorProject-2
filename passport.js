@@ -8,8 +8,10 @@ passport.use(
       clientSecret: "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",
       callbackURL: "https://seniorproject234.herokuapp.com/auth/google/callback",
       passReqToCallback: true,
+      
     },
     function (request, accessToken, refreshToken, profile, done) {
+      
       done(null, profile);
     }
   )

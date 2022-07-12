@@ -55,6 +55,7 @@ router.get(
     {
       successRedirect: CLIENT_URL,
       failureRedirect: "/login/failed",
+      
     },
     
   )
