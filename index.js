@@ -22,7 +22,7 @@ app.use(
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
     secure: false,
-    domain:"https://fontend2223.herokuapp.com/"
+    domain:".herokuapp.com"
   })
 );
 
