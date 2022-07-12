@@ -6,7 +6,7 @@ import axios from "axios"
 const App = () => {
   const [user, setUser] = useState(null);
   let [isAuth, setIsAuth] = React.useState(null);
-  const serverUrl = "http://localhost:3001/auth/login/success"
+  const serverUrl = "https://seniorproject234.herokuapp.com/auth/login/success"
 
   useEffect(() => {
     const getUser = async () => {

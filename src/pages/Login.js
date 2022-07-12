@@ -2,7 +2,7 @@ import React, { Component, useContext, useState } from "react";
 import { userContext } from "../context/userContext";
 const Login = () => {
   const google = () => {
-    window.open("http://localhost:3001/auth/google", "_self");
+    window.open("https://seniorproject234.herokuapp.com/auth/google", "_self");
   };
   const user = useContext(userContext);
   const [sidebar, setsidebar] = useState();
