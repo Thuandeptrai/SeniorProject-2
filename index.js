@@ -20,7 +20,6 @@ app.use(
     name: "session",
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
-    secure: true,
   })
 );
 
@@ -41,13 +40,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: "https://playful-sunshine-3b1379.netlify.app",
-    credentials: true,
-    SameSite:"None"
-  })
-);
+app.use(cors());
 app.get("/", verifyUserIsAdmin, (req, res) => {
   res.status(200).json("ok");
 });
