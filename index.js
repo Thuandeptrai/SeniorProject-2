@@ -43,9 +43,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "https://playful-sunshine-3b1379.netlify.app",
-    credentials: true, //access-control-allow-credentials:true
-    optionSuccessStatus: 200,
+    origin: "https://playful-sunshine-3b1379.netlify.app/",
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
   })
 );
 app.get("/", verifyUserIsAdmin, (req, res) => {
