@@ -43,7 +43,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "https://62cce231fe55ee1418873ac3--playful-sunshine-3b1379.netlify.app",
+    origin: "https://playful-sunshine-3b1379.netlify.app/",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
