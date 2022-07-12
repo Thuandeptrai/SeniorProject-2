@@ -15,14 +15,12 @@ const {
   verifyUserIsAdmin,
 } = require("./verifyToken");
 const Prob = require("./module/problems");
-app.set('https://fontend2223.herokuapp.com/', 1) 
+app.set("https://fontend2223.herokuapp.com", 1);
 app.use(
   cookieSession({
     name: "session",
     keys: ["Test"],
     maxAge: 24 * 60 * 60 * 100,
-
-    
   })
 );
 
