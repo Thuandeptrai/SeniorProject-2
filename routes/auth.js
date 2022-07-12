@@ -12,7 +12,7 @@ router.get("/login/success", async (req, res) => {
         name: req.user.displayName,
         problemSolved: null,
         problemWrong: null,
-        cookies: req.cookies
+        cookies: req.cookies,
       });
       await newUser.save().then(() => {
         res.status(200).json({
@@ -30,9 +30,8 @@ router.get("/login/success", async (req, res) => {
         cookies: req.cookies,
       });
     }
-  }else
-  {
-    res.status(404).json("Does not have a user")
+  } else {
+    res.status(404).json("Does not have a user");
   }
 });
 
@@ -51,16 +50,13 @@ router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
-    successRedirect: CLIENT_URL,
-    failureRedirect: "/login/failed",
-  },(req, res, next)=>{
-    // if success
-    if (req.user) {
-        res.redirect("http://localhost:3000");
-    } else {
-        res.redirect("http://localhost:3000/login-failed");
-    }
-    next();})
+  passport.authenticate(
+    "google",
+    {
+      successRedirect: CLIENT_URL,
+      failureRedirect: "/login/failed",
+    },
+    
+  )
 );
 module.exports = router;
