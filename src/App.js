@@ -1,7 +1,6 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
-import axios from "axios";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -10,12 +9,17 @@ const App = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const transport = axios.create({
-        withCredentials: true,
-      });
-      transport.get(serverUrl).then((res) => {
-        setUser(res.data);
-      }).then((response) => {
+    
+      await fetch(serverUrl, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": true,
+        },
+      })
+        .then((response) => {
           if (response.status === 200) return response.json();
           throw new Error("authentication has been failed!");
         })
