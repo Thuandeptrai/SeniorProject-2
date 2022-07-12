@@ -42,11 +42,7 @@ app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
-  cors({
-    origin: "https://playful-sunshine-3b1379.netlify.app/",
-    methods: "GET,POST,PUT,DELETE",
-    credentials: true,
-  })
+  cors()
 );
 app.get("/", verifyUserIsAdmin, (req, res) => {
   res.status(200).json("ok");
