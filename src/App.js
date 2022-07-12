@@ -6,7 +6,7 @@ const App = () => {
   let [isAuth, setIsAuth] = React.useState(null);
   useEffect(() => {
     const getUser = async () => {
-      await fetch("http://localhost:3001/auth/login/success", {
+      await fetch("https://seniorproject234.herokuapp.com/auth/login/success", {
         method: "GET",
         credentials: "include",
         headers: {

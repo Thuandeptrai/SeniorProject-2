@@ -1,14 +1,13 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import axios from "axios";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Reaptcha from "reaptcha";
 import { userContext } from "../context/userContext";
 
 function Prob() {
   const user = useContext(userContext);
   const [code, setCode] = React.useState(`var a=1;`);
-  const [stdin, setStdin] = React.useState(null);
   const [lang, setLang] = React.useState("cpp");
   const [token, setToken] = React.useState(false);
   const [singleProb, setsingleProb] = React.useState(null);
@@ -22,6 +21,7 @@ function Prob() {
     handleClick();
     setToken(false);
   };
+  const history = useNavigate()
 
   const transport = axios.create({
     withCredentials: true,
@@ -52,9 +52,7 @@ function Prob() {
       });
   };
   const [show, setShow] = useState(false);
-  const [product, setProduct] = useState(false);
-  const [deliverables, setDeliverables] = useState(false);
-  const [profile, setProfile] = useState(false);
+
   return (
     <>
       {singleProb !== null ? (
@@ -152,7 +150,11 @@ function Prob() {
                 </ul>
               </div>
               <div className="mt-6 lg:mt-0">
-                <button className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm">
+                <button className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm" onClick={(e)=>
+                {
+                  e.preventDefault()
+                  history("/")
+                }}>
                   Back
                 </button>
                 <button
