@@ -10,9 +10,15 @@ const App = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      axios.get(serverUrl, { withCredentials: true }).then((res) => {
-        console.log(res.data)
+      const transport = axios.create({
+        withCredentials: true,
       });
+      transport.get(serverUrl).then(
+        (res)=>
+        {
+          console.log(res.data)
+        }
+      )
       await fetch(serverUrl, {
         method: "GET",
         credentials: "include",
