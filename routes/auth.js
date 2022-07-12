@@ -2,7 +2,7 @@ const router = require("express").Router();
 const passport = require("passport");
 const User = require("../module/user");
 
-const CLIENT_URL = "https://playful-sunshine-3b1379.netlify.app";
+const CLIENT_URL = "https://fontend2223.herokuapp.com";
 router.get("/login/success", async (req, res) => {
   if (req.user) {
     let existingUser = await User.findOne({ id: req.user.id });
