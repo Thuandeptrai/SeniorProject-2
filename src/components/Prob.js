@@ -281,9 +281,9 @@ function Prob() {
                         Input:
                       </h5>
                       {
-                        testInput.map(data =>(<>
-                           <p className="subpixel-antialiased">
-                        {data} 
+                        testInput.map((data,index)=>(<>
+                           <p key={index} className ="subpixel-antialiased">
+                        {"Testcase"} {index+1}{": "} {data} 
                       </p></>))
                    
                       }
@@ -298,9 +298,9 @@ function Prob() {
                         Output:
                       </h5>
                       {
-                        testOutput.map(data =>(<>
-                           <p className="subpixel-antialiased">
-                        {data} 
+                        testOutput.map((data,index) =>(<>
+                           <p key={index} className="subpixel-antialiased">
+                           {"Testcase"} {index+1}{": "} {data} 
                       </p></>))
                    
                       }
