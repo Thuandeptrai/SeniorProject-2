@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     
     problemSolved:{
         type: Array,
+        default : []
     },
     problemWrong:{
       type: Array,

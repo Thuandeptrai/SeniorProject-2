@@ -10,8 +10,9 @@ router.get("/login/success", async (req, res) => {
       const newUser = new User({
         id: req.user.id,
         name: req.user.displayName,
-        problemSolved: null,
-        problemWrong: null,
+        problemSolved: [],
+        problemWrong: [],
+
         cookies: req.cookies,
       });
       await newUser.save().then(() => {
