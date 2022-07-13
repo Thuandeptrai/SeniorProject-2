@@ -18,16 +18,16 @@ const problems = new mongoose.Schema({
     type:String,
   },
   testInput: {
-    type: String,
+    type: Array,
   },
   testOutput: {
-    type: String,
+    type: Array,
   },
   realInput: {
-    type: String,
+    type: Array,
   },
   realOutput: {
-    type: String,
+    type: Array,
   },
   wrongAns:{
     type:Array,

@@ -73,8 +73,8 @@ app.post("/testcompiler", verifyTokenAndAuthorization, async (req, res) => {
       });
 
     const problem = await Prob.findOne({ id: problemId });
-    const myArry = problem.testInput.split(" ");
-    const ans = problem.testOutput.split(" ");
+    const myArry = problem.testInput
+    const ans = problem.testOutput
     let correct = 0;
 
     for (let i = 0; i < myArry.length; i++) {
@@ -183,15 +183,15 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
       if (!resdata.data.success) {
         res.status(404).json("Wrong captcha");
       }
-      validateCaptcha = resdata.data;
+      validateCaptcha = resdata.data.success;
     })
     .catch((err) => {
       console.log(err);
     });
 
   const problem = await Prob.findOne({ id: problemId });
-  const myArry = problem.realInput.split(" ");
-  const ans = problem.realOutput.split(" ");
+  const myArry = problem.realInput;
+  const ans = problem.realOutput;
   let correct = 0;
   try {
     for (let i = 0; i < myArry.length; i++) {
@@ -369,20 +369,18 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
       }
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 });
-app.get("/user/:id",verifyTokenAndAuthorization, async (req,res) =>
-{
+app.get("/user/:id", verifyTokenAndAuthorization, async (req, res) => {
   const userId = req.params;
-  const getUser = await User.find({id: userId.id })
-  if(getUser)
-  {
-    res.status(200).json(getUser)
-  }else{
-    res.status(400).json("Not Found")
+  const getUser = await User.find({ id: userId.id });
+  if (getUser) {
+    res.status(200).json(getUser);
+  } else {
+    res.status(400).json("Not Found");
   }
+});
 
-})
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
