@@ -15,16 +15,28 @@ function Home() {
     let path = `/prob/${id.id}`;
     navigate(path);
   };
+  const handleShowMore = async () => {
+    let probsize = prob.length;
+    await getProblem
+      .get(`http://localhost:3001/problem/${probsize}`)
+      .then((newProb) => {
+        if (newProb.data !== "Full") {
+          for (let i = 0; i < newProb.data.length; i++) {
+            setProb((oldArray) => [...oldArray, newProb.data[i]]);
+          }
+        }
+      });
+  };
   useEffect(() => {
     const getProb = async () => {
-      await getProblem.get("http://localhost:3001/problem/10").then((prob) => {
+      await getProblem.get("http://localhost:3001/problem/0").then((prob) => {
         setProb(prob.data);
       });
     };
     if (prob.length === 0) {
       getProb();
     }
-  });
+  }, []);
   return (
     <>
       <div>
@@ -118,9 +130,7 @@ function Home() {
                                 <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                 <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
                               </svg>
-                              <p className="col-span-1">
-                                {data.ans.length === 0 ? 0 : data.ans.length}
-                              </p>
+                              <p className="col-span-1"></p>
                             </div>
                           </td>
 
@@ -140,6 +150,7 @@ function Home() {
               </table>
             </div>
           </div>
+          <button onClick={handleShowMore}> Show More </button>
         </div>
         <style>
           {` .checkbox:checked + .check-icon {
