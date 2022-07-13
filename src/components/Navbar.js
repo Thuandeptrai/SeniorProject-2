@@ -70,7 +70,7 @@ const Navbar = () => {
             </ul>
           ) : null}
           {user !== null ? (
-            <div className=" flex space-x-5 justify-center items-center pl-2" onClick={logout}>
+            <div className=" flex space-x-5 justify-center items-center pl-2 cursor-pointer" onClick={logout}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
