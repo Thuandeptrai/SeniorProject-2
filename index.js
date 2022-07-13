@@ -73,8 +73,8 @@ app.post("/testcompiler", verifyTokenAndAuthorization, async (req, res) => {
       });
 
     const problem = await Prob.findOne({ id: problemId });
-    const myArry = problem.testInput
-    const ans = problem.testOutput
+    const myArry = problem.testInput;
+    const ans = problem.testOutput;
     let correct = 0;
 
     for (let i = 0; i < myArry.length; i++) {
@@ -147,8 +147,16 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
 });
 app.get("/problem/:id", verifyTokenAndAuthorization, async (req, res) => {
   const ProbId = req.params;
-  const Problem = await Prob.find({}).skip(ProbId.id);
-  res.status(200).json(Problem);
+  const maxProb = await Prob.count({});
+  if(ProbId === maxProb || ProbId > maxProb)
+  {
+    res.status(200).json("Full")
+  }else
+  {
+    const Problem = await Prob.find({}).skip(ProbId.id).limit(10);
+    res.status(200).json(Problem);
+  }
+
 });
 
 app.get("/singleproblem/:id", verifyTokenAndAuthorization, async (req, res) => {
@@ -380,6 +388,10 @@ app.get("/user/:id", verifyTokenAndAuthorization, async (req, res) => {
   } else {
     res.status(400).json("Not Found");
   }
+});
+app.get("/prob", async (req, res) => {
+ 
+  res.status(200).json(getUser);
 });
 
 const PORT = process.env.PORT || 3001;
