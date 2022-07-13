@@ -13,6 +13,7 @@ function Prob() {
   const [singleProb, setsingleProb] = React.useState(null);
   const [capchaRes, getcapchaRes] = React.useState(null);
   const [wrongAns, setwrongAns] = React.useState(null);
+  const [answer, setAnswer] = React.useState(null)
   console.log(singleProb);
   const id = useParams();
   let refContainer = useRef(null);
@@ -43,6 +44,8 @@ function Prob() {
         if (response.data === "Passed") {
           setwrongAns(false);
         } else {
+          setAnswer(response.data)
+
           setwrongAns(true);
         }
       });
@@ -188,7 +191,7 @@ function Prob() {
                     setLang(e.target.value);
                   }}
                   value={lang}
-                  className="ml-4"
+                  className="ml-4 my-3"
                 >
                   <option value="cpp17">C/C++</option>
                   <option value="Python">Python</option>
@@ -205,7 +208,7 @@ function Prob() {
                   >
                     <strong className="text-sm font-medium">
                       {" "}
-                      You Are {wrongAns === true ? "Not" : null} Passed{" "}
+                      You Are {wrongAns === true ? "Not" : null} Passed{" "} {"("} {answer !== null ? answer : null} {")"}
                     </strong>
                   </div>
                 ) : null}
