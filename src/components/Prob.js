@@ -63,8 +63,8 @@ function Prob() {
       transport
         .get(`http://localhost:3001/singleproblem/${id}`)
         .then(async (res) => {
-          const Arry = res.data.testInput.split(" ")
-          const ArryOutput = res.data.testOutput.split(" ")
+          const Arry = res.data.testInput
+          const ArryOutput = res.data.testOutput
           setTestOutput(ArryOutput)
           setTestInput(Arry)
           setsingleProb(res.data);
@@ -216,6 +216,7 @@ function Prob() {
                     token !== true ? `opacity-50 cursor-not-allowed` : null
                   }   focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm`}
                   onClick={onClickSubmit}
+                  disabled={!token}
                 >
                   Submit
                 </button>
@@ -238,12 +239,7 @@ function Prob() {
                     <option value="Java" className="text-sm text-indigo-800">
                       Java
                     </option>
-                    <option
-                      value="Javascript"
-                      className="text-sm text-indigo-800"
-                    >
-                      Javascript
-                    </option>
+                   
                   </select>
                 </div>
                 {wrongAns !== null ? (
