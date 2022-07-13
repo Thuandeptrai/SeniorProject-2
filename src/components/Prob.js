@@ -7,11 +7,13 @@ import { userContext } from "../context/userContext";
 
 function Prob() {
   const user = useContext(userContext);
-  const [code, setCode] = React.useState(`var a=1;`);
+  const [code, setCode] = React.useState("");
   const [lang, setLang] = React.useState("cpp");
   const [token, setToken] = React.useState(false);
   const [singleProb, setsingleProb] = React.useState(null);
   const [capchaRes, getcapchaRes] = React.useState(null);
+  const [wrongAns, setwrongAns] = React.useState(null);
+  console.log(singleProb);
   const id = useParams();
   let refContainer = useRef(null);
 
@@ -21,11 +23,32 @@ function Prob() {
     handleClick();
     setToken(false);
   };
-  const history = useNavigate()
+  const history = useNavigate();
 
   const transport = axios.create({
     withCredentials: true,
   });
+  const onClickSubmit = async () => {
+    setwrongAns(null);
+    setToken(false);
+
+    await transport
+      .post("http://localhost:3001/submit", {
+        code,
+        lang,
+        problemId: id.id,
+        captcha: capchaRes,
+      })
+      .then(async (response) => {
+        if (response.data === "Passed") {
+          setwrongAns(false);
+        } else {
+          setwrongAns(true);
+        }
+      });
+
+    refContainer.reset();
+  };
   useEffect(() => {
     const getProbSingle = async ({ id }) => {
       const transport = axios.create({
@@ -39,6 +62,8 @@ function Prob() {
     getProbSingle(id);
   }, []);
   const handleClick = async () => {
+    setwrongAns(null);
+
     await transport
       .post("http://localhost:3001/Testcompiler", {
         code,
@@ -46,7 +71,13 @@ function Prob() {
         problemId: id.id,
         captcha: capchaRes,
       })
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        if (res.data === "Passed") {
+          setwrongAns(false);
+        } else {
+          setwrongAns(true);
+        }
+      })
       .catch((err) => {
         /* not hit since no 401 */
       });
@@ -78,7 +109,7 @@ function Prob() {
             {/* Page title starts */}
             <div className="my-6 lg:my-12 container px-6 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
               <div>
-                <h4 className="text-2xl font-bold leading-tight text-gray-800">
+                <h4 className="text-3xl lg:text-6xl  font-bold leading-tight text-gray-800">
                   {singleProb.title}
                 </h4>
                 <ul className="flex flex-col md:flex-row items-start md:items-center text-gray-600 text-sm mt-3">
@@ -100,7 +131,7 @@ function Prob() {
                         <path d="M15 7l-6.5 6.5a1.5 1.5 0 0 0 3 3l6.5 -6.5a3 3 0 0 0 -6 -6l-6.5 6.5a4.5 4.5 0 0 0 9 9 l6.5 -6.5" />
                       </svg>
                     </span>
-                    <span>Active</span>
+                    <span>{singleProb.ans.length}</span>
                   </li>
                   <li className="flex items-center mr-3 mt-3 md:mt-0">
                     <span className="mr-2">
@@ -123,38 +154,16 @@ function Prob() {
                     </span>
                     <span> Trending</span>
                   </li>
-                  <li className="flex items-center mt-3 md:mt-0">
-                    <span className="mr-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="icon icon-tabler icon-tabler-plane-departure"
-                        width={16}
-                        height={16}
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path stroke="none" d="M0 0h24v24H0z" />
-                        <path
-                          d="M15 12h5a2 2 0 0 1 0 4h-15l-3 -6h3l2 2h3l-2 -7h3z"
-                          transform="rotate(-15 12 12) translate(0 -1)"
-                        />
-                        <line x1={3} y1={21} x2={21} y2={21} />
-                      </svg>
-                    </span>
-                    <span>Started on 29 Jan 2020</span>
-                  </li>
                 </ul>
               </div>
               <div className="mt-6 lg:mt-0">
-                <button className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm" onClick={(e)=>
-                {
-                  e.preventDefault()
-                  history("/")
-                }}>
+                <button
+                  className="mx-2 my-2 bg-white transition duration-150 ease-in-out focus:outline-none hover:bg-gray-100 rounded text-indigo-700 px-6 py-2 text-sm"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    history("/");
+                  }}
+                >
                   Back
                 </button>
                 <button
@@ -166,17 +175,64 @@ function Prob() {
                 >
                   Test
                 </button>
-                <button className="transition duration-150 ease-in-out hover:bg-sky-500 focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm">
+                <button
+                  className={`transition duration-150 ease-in-out ${
+                    token !== true ? `opacity-50 cursor-not-allowed` : null
+                  }   focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm`}
+                  onClick={onClickSubmit}
+                >
                   Submit
                 </button>
+                {wrongAns !== null ? (
+                  <div
+                    className={`p-4 ${
+                      wrongAns === false
+                        ? "text-green-700  border-green-900/10 bg-green-50"
+                        : "text-red-700  border-red-900/10 bg-red-50"
+                    }  border rounded`}
+                  >
+                    <strong className="text-sm font-medium">
+                      {" "}
+                      You Are {wrongAns === true ? "Not" : null} Passed{" "}
+                    </strong>
+                  </div>
+                ) : null}
               </div>
             </div>
             {/* Page title ends */}
             <div className="container mx-auto px-6">
               {/* Remove class [ h-64 ] when adding a card block */}
               {/* Remove class [ border-dashed border-2 border-gray-300 ] to remove dotted border */}
-              <div className="w-full h-64 rounded ">
-                <p>{singleProb.title}</p>
+              <div className="w-full h-64 rounded  ">
+                <div className="mb-8">
+                  <div className="mb-8">
+                    <strong className="text-2xl xl:text-5xl   font-medium ">
+                      {" "}
+                      Description:{" "}
+                    </strong>
+                  </div>
+                  <p>{singleProb.desc}</p>
+                </div>
+                <div className="mb-20   ">
+                  <div className="my-20  p-8 border border-gray-100 shadow-xl rounded-xl">
+                    <div className="mt-4 text-gray-500 sm:pr-8 ">
+                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                        Input:
+                      </h5>
+                      <p className="subpixel-antialiased">{singleProb.testInput}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-20   ">
+                  <div className="my-20  p-8 border border-gray-100 shadow-xl rounded-xl">
+                    <div className="mt-4 text-gray-500 sm:pr-8 ">
+                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                        Output:
+                      </h5>
+                      <p className="subpixel-antialiased">{singleProb.testOutput}</p>
+                    </div>
+                  </div>
+                </div>
                 <select
                   onChange={(e) => {
                     setLang(e.target.value);
@@ -188,10 +244,12 @@ function Prob() {
                   <option value="Java">Java</option>
                   <option value="Javascript">Javascript</option>
                 </select>
+             
+
                 <CodeEditor
                   value={code}
                   language={lang}
-                  placeholder="Please enter JS code."
+                  placeholder="Please enter the code."
                   onChange={(evn) => setCode(evn.target.value)}
                   padding={15}
                   style={{
