@@ -372,5 +372,17 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
     console.log(err)
   }
 });
+app.get("/user/:id",verifyTokenAndAuthorization, async (req,res) =>
+{
+  const userId = req.params;
+  const getUser = await User.find({id: userId.id })
+  if(getUser)
+  {
+    res.status(200).json(getUser)
+  }else{
+    res.status(400).json("Not Found")
+  }
+
+})
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
