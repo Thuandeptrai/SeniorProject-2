@@ -15,7 +15,10 @@ function Prob() {
   const [wrongAns, setwrongAns] = React.useState(null);
   const [answer, setAnswer] = React.useState(null);
   const [author, setAuthor] = React.useState(null);
-  console.log(singleProb);
+  const [show, setShow] = useState(false);
+  const [langsubmit, setLangsubmit] = useState(null)
+  const [testInput, setTestInput] = useState([])
+  const [testOutput, setTestOutput] = useState([])
   const id = useParams();
   let refContainer = useRef(null);
 
@@ -37,7 +40,7 @@ function Prob() {
     await transport
       .post("http://localhost:3001/submit", {
         code,
-        lang,
+        lang:langsubmit,
         problemId: id.id,
         captcha: capchaRes,
       })
@@ -60,6 +63,10 @@ function Prob() {
       transport
         .get(`http://localhost:3001/singleproblem/${id}`)
         .then(async (res) => {
+          const Arry = res.data.testInput.split(" ")
+          const ArryOutput = res.data.testOutput.split(" ")
+          setTestOutput(ArryOutput)
+          setTestInput(Arry)
           setsingleProb(res.data);
           await transport
             .get(`http://localhost:3001/user/${res.data.userCreated}`)
@@ -70,6 +77,22 @@ function Prob() {
     };
     getProbSingle(id);
   }, [wrongAns]);
+  useEffect(() =>
+  {
+      if(lang === "Python")
+      {
+        setLangsubmit("python3")
+      }
+      
+      if(lang === "Java")
+      {
+        setLangsubmit("java")
+      }
+      if(lang === "cpp")
+      {
+        setLangsubmit("cpp")
+      }
+  },[lang])
   const handleClick = async () => {
     setwrongAns(null);
 
@@ -91,7 +114,7 @@ function Prob() {
         /* not hit since no 401 */
       });
   };
-  const [show, setShow] = useState(false);
+  
   return (
     <>
       {singleProb !== null ? (
@@ -196,21 +219,36 @@ function Prob() {
                 >
                   Submit
                 </button>
-                <select
-                  onChange={(e) => {
-                    setLang(e.target.value);
-                  }}
-                  value={lang}
-                  className="ml-4 my-3"
-                >
-                  <option value="cpp17">C/C++</option>
-                  <option value="Python">Python</option>
-                  <option value="Java">Java</option>
-                  <option value="Javascript">Javascript</option>
-                </select>
+                <div className="py-3 px-4 flex items-center  max-w-md text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+                  <p>Selected Lang:</p>
+
+                  <select
+                    onChange={(e) => {
+                      setLang(e.target.value);
+                    }}
+                    value={lang}
+                    className="focus:outline-none bg-transparent ml-1"
+                  >
+                    <option value="cpp" className="text-sm text-indigo-800">
+                      C/C++
+                    </option>
+                    <option value="Python" className="text-sm text-indigo-800">
+                      Python
+                    </option>
+                    <option value="Java" className="text-sm text-indigo-800">
+                      Java
+                    </option>
+                    <option
+                      value="Javascript"
+                      className="text-sm text-indigo-800"
+                    >
+                      Javascript
+                    </option>
+                  </select>
+                </div>
                 {wrongAns !== null ? (
                   <div
-                    className={`p-4 ${
+                    className={`p-4 mt-2 ${
                       wrongAns === false
                         ? "text-green-700  border-green-900/10 bg-green-50"
                         : "text-red-700  border-red-900/10 bg-red-50"
@@ -218,13 +256,14 @@ function Prob() {
                   >
                     <strong className="text-sm font-medium">
                       {" "}
-                      You Are {wrongAns === true ? "Not" : null} Passed
-                      {answer !== null || wrongAns === false ? answer : null}
+                      You Are {wrongAns === true ? "Not" : null} Passed{" "}
+                      {answer !== null && wrongAns === true ? answer : null}
                     </strong>
                   </div>
                 ) : null}
               </div>
             </div>
+
             {/* Page title ends */}
             <div className="container mx-auto px-6">
               {/* Remove class [ h-64 ] when adding a card block */}
@@ -245,9 +284,14 @@ function Prob() {
                       <h5 className="mt-4 text-xl font-bold text-gray-900 ">
                         Input:
                       </h5>
-                      <p className="subpixel-antialiased">
-                        {singleProb.testInput}
-                      </p>
+                      {
+                        testInput.map(data =>(<>
+                           <p className="subpixel-antialiased">
+                        {data} 
+                      </p></>))
+                   
+                      }
+                      
                     </div>
                   </div>
                 </div>
@@ -257,9 +301,13 @@ function Prob() {
                       <h5 className="mt-4 text-xl font-bold text-gray-900 ">
                         Output:
                       </h5>
-                      <p className="subpixel-antialiased">
-                        {singleProb.testOutput}
-                      </p>
+                      {
+                        testOutput.map(data =>(<>
+                           <p className="subpixel-antialiased">
+                        {data} 
+                      </p></>))
+                   
+                      }
                     </div>
                   </div>
                 </div>
