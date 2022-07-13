@@ -171,7 +171,23 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
   code = req.body.code;
   lang = req.body.lang;
   user = req.user;
+  captcha = req.body.captcha;
   problemId = req.body.problemId;
+  let validateCaptcha;
+
+  await axios
+    .get(
+      `https://www.google.com/recaptcha/api/siteverify?secret=6LemUxAUAAAAAPlLsbu-XqI6vEnRDWlDwAtSyKl8&response=${captcha}`
+    )
+    .then((resdata) => {
+      if (!resdata.data.success) {
+        res.status(404).json("Wrong captcha");
+      }
+      validateCaptcha = resdata.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   const problem = await Prob.findOne({ id: problemId });
   const myArry = problem.realInput.split(" ");
@@ -256,8 +272,9 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
           { new: true }
         );
       }
-
-      res.status(200).json(`${correct}/${ans.length}`);
+      if (validateCaptcha) {
+        res.status(200).json(`Passed`);
+      }
     } else {
       const userId = req.user.id;
       const getUser = await User.findOne({ id: userId });
@@ -346,10 +363,13 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
           }
         }
       }
-      res.status(200).json(`${correct}/${ans.length}`);
+
+      if (validateCaptcha) {
+        res.status(200).json(`${correct}/${ans.length}`);
+      }
     }
   } catch (err) {
-    res.status(500).json(err);
+    console.log(err)
   }
 });
 const PORT = process.env.PORT || 3001;
