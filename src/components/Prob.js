@@ -13,7 +13,8 @@ function Prob() {
   const [singleProb, setsingleProb] = React.useState(null);
   const [capchaRes, getcapchaRes] = React.useState(null);
   const [wrongAns, setwrongAns] = React.useState(null);
-  const [answer, setAnswer] = React.useState(null)
+  const [answer, setAnswer] = React.useState(null);
+  const [author, setAuthor] = React.useState(null);
   console.log(singleProb);
   const id = useParams();
   let refContainer = useRef(null);
@@ -32,7 +33,7 @@ function Prob() {
   const onClickSubmit = async () => {
     setwrongAns(null);
     setToken(false);
-
+    refContainer.reset();
     await transport
       .post("http://localhost:3001/submit", {
         code,
@@ -44,13 +45,11 @@ function Prob() {
         if (response.data === "Passed") {
           setwrongAns(false);
         } else {
-          setAnswer(response.data)
+          setAnswer(response.data);
 
           setwrongAns(true);
         }
       });
-
-    refContainer.reset();
   };
   useEffect(() => {
     const getProbSingle = async ({ id }) => {
@@ -58,12 +57,19 @@ function Prob() {
         withCredentials: true,
       });
 
-      transport.get(`http://localhost:3001/singleproblem/${id}`).then((res) => {
-        setsingleProb(res.data);
-      });
+      transport
+        .get(`http://localhost:3001/singleproblem/${id}`)
+        .then(async (res) => {
+          setsingleProb(res.data);
+          await transport
+            .get(`http://localhost:3001/user/${res.data.userCreated}`)
+            .then((response) => {
+              setAuthor(response.data[0]);
+            });
+        });
     };
     getProbSingle(id);
-  }, []);
+  }, [wrongAns]);
   const handleClick = async () => {
     setwrongAns(null);
 
@@ -86,7 +92,6 @@ function Prob() {
       });
   };
   const [show, setShow] = useState(false);
-
   return (
     <>
       {singleProb !== null ? (
@@ -136,27 +141,32 @@ function Prob() {
                     </span>
                     <span>{singleProb.ans.length}</span>
                   </li>
-                  <li className="flex items-center mr-3 mt-3 md:mt-0">
-                    <span className="mr-2">
+                  {author !== null ? (
+                    <li className="flex items-center mr-3 mt-3 md:mt-0">
                       <svg
+                        className="mr-2"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="icon icon-tabler icon-tabler-trending-up"
-                        width={16}
-                        height={16}
+                        class="icon icon-tabler icon-tabler-user"
+                        width="24"
+                        height="24"
                         viewBox="0 0 24 24"
-                        strokeWidth="1.5"
+                        stroke-width="2"
                         stroke="currentColor"
                         fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       >
-                        <path stroke="none" d="M0 0h24v24H0z" />
-                        <polyline points="3 17 9 11 13 15 21 7" />
-                        <polyline points="14 7 21 7 21 14" />
+                        <path
+                          stroke="none"
+                          d="M0 0h24v24H0z"
+                          fill="none"
+                        ></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
                       </svg>
-                    </span>
-                    <span> Trending</span>
-                  </li>
+                      <span>{author.name} </span>
+                    </li>
+                  ) : null}
                 </ul>
               </div>
               <div className="mt-6 lg:mt-0">
@@ -208,7 +218,8 @@ function Prob() {
                   >
                     <strong className="text-sm font-medium">
                       {" "}
-                      You Are {wrongAns === true ? "Not" : null} Passed{" "} {"("} {answer !== null ? answer : null} {")"}
+                      You Are {wrongAns === true ? "Not" : null} Passed
+                      {answer !== null || wrongAns === false ? answer : null}
                     </strong>
                   </div>
                 ) : null}
@@ -252,7 +263,7 @@ function Prob() {
                     </div>
                   </div>
                 </div>
-                    
+
                 <CodeEditor
                   value={code}
                   language={lang}

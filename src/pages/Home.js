@@ -63,14 +63,18 @@ function Home() {
                   </div>
                 </a>
               </div>
-              <button
-                onClick="popuphandler(true)"
-                className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
-              >
-                <p className="text-sm font-medium leading-none text-white">
-                  Add Task
-                </p>
-              </button>
+              {user.isAdmin === true ? (
+                <>
+                  <button
+                    onClick="popuphandler(true)"
+                    className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                  >
+                    <p className="text-sm font-medium leading-none text-white">
+                      Create Problem
+                    </p>
+                  </button>
+                </>
+              ) : null}
             </div>
             <div className="mt-7 overflow-x-auto">
               <table className="w-full whitespace-nowrap table-auto">
@@ -94,7 +98,7 @@ function Home() {
                             <div className="flex gap-0 justify-center">
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                class="icon icon-tabler icon-tabler-user"
+                                class="icon icon-tabler icon-tabler-users"
                                 width="24"
                                 height="24"
                                 viewBox="0 0 24 24"
@@ -102,15 +106,17 @@ function Home() {
                                 stroke="currentColor"
                                 fill="none"
                                 stroke-linecap="round"
-                                strokeLinejoin="round"
+                                stroke-linejoin="round"
                               >
                                 <path
                                   stroke="none"
                                   d="M0 0h24v24H0z"
                                   fill="none"
                                 ></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                                <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path>
                               </svg>
                               <p className="col-span-1">
                                 {data.ans.length === 0 ? 0 : data.ans.length}
