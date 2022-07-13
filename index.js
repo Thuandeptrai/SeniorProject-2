@@ -216,7 +216,7 @@ app.post("/submit", verifyTokenAndAuthorization, async (req, res) => {
           }
         )
         .then(async (data) => {
-          if (data.data.output === ans[i]) {
+          if (data.data.output.replace(/(\r\n|\n|\r)/gm, "") === ans[i]) {
             correct++;
           }
         });
