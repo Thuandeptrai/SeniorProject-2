@@ -183,6 +183,18 @@ function Prob() {
                 >
                   Submit
                 </button>
+                <select
+                  onChange={(e) => {
+                    setLang(e.target.value);
+                  }}
+                  value={lang}
+                  className="ml-4"
+                >
+                  <option value="cpp17">C/C++</option>
+                  <option value="Python">Python</option>
+                  <option value="Java">Java</option>
+                  <option value="Javascript">Javascript</option>
+                </select>
                 {wrongAns !== null ? (
                   <div
                     className={`p-4 ${
@@ -213,39 +225,31 @@ function Prob() {
                   </div>
                   <p>{singleProb.desc}</p>
                 </div>
-                <div className="mb-20   ">
-                  <div className="my-20  p-8 border border-gray-100 shadow-xl rounded-xl">
+                <div className="mb-10   ">
+                  <div className="my-10  p-8 border border-gray-100 shadow-xl rounded-xl">
                     <div className="mt-4 text-gray-500 sm:pr-8 ">
                       <h5 className="mt-4 text-xl font-bold text-gray-900 ">
                         Input:
                       </h5>
-                      <p className="subpixel-antialiased">{singleProb.testInput}</p>
+                      <p className="subpixel-antialiased">
+                        {singleProb.testInput}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <div className="mb-20   ">
+                <div className="mb-10   ">
                   <div className="my-20  p-8 border border-gray-100 shadow-xl rounded-xl">
                     <div className="mt-4 text-gray-500 sm:pr-8 ">
                       <h5 className="mt-4 text-xl font-bold text-gray-900 ">
                         Output:
                       </h5>
-                      <p className="subpixel-antialiased">{singleProb.testOutput}</p>
+                      <p className="subpixel-antialiased">
+                        {singleProb.testOutput}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <select
-                  onChange={(e) => {
-                    setLang(e.target.value);
-                  }}
-                  value={lang}
-                >
-                  <option value="cpp17">C/C++</option>
-                  <option value="Python">Python</option>
-                  <option value="Java">Java</option>
-                  <option value="Javascript">Javascript</option>
-                </select>
-             
-
+                    
                 <CodeEditor
                   value={code}
                   language={lang}
@@ -259,7 +263,6 @@ function Prob() {
                       "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
                   }}
                 />
-
                 <Reaptcha
                   ref={(e) => (refContainer = e)}
                   sitekey="6LemUxAUAAAAANmEr4N1jZRIw3xQmfNuHZCd7dqa"
@@ -267,6 +270,7 @@ function Prob() {
                     getcapchaRes(recaptchaResponse);
                     setToken(true);
                   }}
+                  className="mt-10"
                 />
               </div>
             </div>
