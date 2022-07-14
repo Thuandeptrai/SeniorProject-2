@@ -7,6 +7,7 @@ function Home() {
   const user = useContext(userContext);
   const [show, setShow] = useState(null);
   const [prob, setProb] = useState([]);
+  const [hide, setHide] = useState(false)
   const getProblem = axios.create({
     withCredentials: true,
   });
@@ -24,6 +25,12 @@ function Home() {
           for (let i = 0; i < newProb.data.length; i++) {
             setProb((oldArray) => [...oldArray, newProb.data[i]]);
           }
+       
+        }
+        if(newProb.data === "Full")
+        {
+        setHide(true)
+
         }
       });
   };
@@ -150,9 +157,24 @@ function Home() {
               </table>
             </div>
           </div>
-          <button onClick={handleShowMore}> Show More </button>
+          { hide !== true ?
+          <div className="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
+
+
+          <button 
+            type="submit"
+            class="col-start-2 col-span-1 lg:col-start-3  inline-block px-5 py-3 ml-3 text-sm font-medium text-white bg-blue-500 rounded-lg"
+            onClick={handleShowMore}
+            >
+            {" "}
+            Show More{" "}
+          </button>
+            </div>
+            :null  }
         </div>
-        <style>
+   
+
+<style>
           {` .checkbox:checked + .check-icon {
                 display: flex;
             }`}
