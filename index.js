@@ -148,7 +148,7 @@ app.post("/createProblem", verifyUserIsAdmin, async (req, res) => {
 app.get("/problem/:id", verifyTokenAndAuthorization, async (req, res) => {
   const ProbId = req.params;
   const maxProb = await Prob.count({});
-  if(ProbId === maxProb || ProbId > maxProb)
+  if(ProbId.id === maxProb || ProbId.id >= maxProb)
   {
     res.status(200).json("Full")
   }else
