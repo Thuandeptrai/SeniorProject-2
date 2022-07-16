@@ -1,12 +1,10 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import axios from "axios";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Reaptcha from "reaptcha";
-import { userContext } from "../context/userContext";
 
 function Prob() {
-  const user = useContext(userContext);
   const [code, setCode] = React.useState("");
   const [lang, setLang] = React.useState("cpp");
   const [token, setToken] = React.useState(false);
@@ -16,9 +14,9 @@ function Prob() {
   const [answer, setAnswer] = React.useState(null);
   const [author, setAuthor] = React.useState(null);
   const [show, setShow] = useState(false);
-  const [langsubmit, setLangsubmit] = useState(null)
-  const [testInput, setTestInput] = useState([])
-  const [testOutput, setTestOutput] = useState([])
+  const [langsubmit, setLangsubmit] = useState(null);
+  const [testInput, setTestInput] = useState([]);
+  const [testOutput, setTestOutput] = useState([]);
   const id = useParams();
   let refContainer = useRef(null);
 
@@ -40,7 +38,7 @@ function Prob() {
     await transport
       .post("http://localhost:3001/submit", {
         code,
-        lang:langsubmit,
+        lang: langsubmit,
         problemId: id.id,
         captcha: capchaRes,
       })
@@ -63,10 +61,10 @@ function Prob() {
       transport
         .get(`http://localhost:3001/singleproblem/${id}`)
         .then(async (res) => {
-          const Arry = res.data.testInput
-          const ArryOutput = res.data.testOutput
-          setTestOutput(ArryOutput)
-          setTestInput(Arry)
+          const Arry = res.data.testInput;
+          const ArryOutput = res.data.testOutput;
+          setTestOutput(ArryOutput);
+          setTestInput(Arry);
           setsingleProb(res.data);
           await transport
             .get(`http://localhost:3001/user/${res.data.userCreated}`)
@@ -77,22 +75,18 @@ function Prob() {
     };
     getProbSingle(id);
   }, [wrongAns]);
-  useEffect(() =>
-  {
-      if(lang === "Python")
-      {
-        setLangsubmit("python3")
-      }
-      
-      if(lang === "Java")
-      {
-        setLangsubmit("java")
-      }
-      if(lang === "cpp")
-      {
-        setLangsubmit("cpp")
-      }
-  },[lang])
+  useEffect(() => {
+    if (lang === "Python") {
+      setLangsubmit("python3");
+    }
+
+    if (lang === "Java") {
+      setLangsubmit("java");
+    }
+    if (lang === "cpp") {
+      setLangsubmit("cpp");
+    }
+  }, [lang]);
   const handleClick = async () => {
     setwrongAns(null);
 
@@ -114,7 +108,7 @@ function Prob() {
         /* not hit since no 401 */
       });
   };
-  
+
   return (
     <>
       {singleProb !== null ? (
@@ -202,25 +196,58 @@ function Prob() {
                 >
                   Back
                 </button>
-                <button
-                  className={`transition duration-150  mx-8 ease-in-out ${
-                    token !== true ? `opacity-50 cursor-not-allowed` : null
-                  } focus:outline-none border bg-indigo-700 rounded text-white px-8 py-2 text-sm`}
-                  onClick={onButtonClick}
-                  disabled={!token}
-                >
-                  Test
-                </button>
-                <button
-                  className={`transition duration-150 ease-in-out ${
-                    token !== true ? `opacity-50 cursor-not-allowed` : null
-                  }   focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm`}
-                  onClick={onClickSubmit}
-                  disabled={!token}
-                >
-                  Submit
-                </button>
-                <div className="py-3 px-4 flex items-center  max-w-md text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+              </div>
+            </div>
+
+            {/* Page title ends */}
+            <div className="container mx-auto px-6">
+              {/* Remove class [ h-64 ] when adding a card block */}
+              {/* Remove class [ border-dashed border-2 border-gray-300 ] to remove dotted border */}
+              <div className="w-full h-64 rounded  ">
+                <div className="mb-8">
+                  <div className="mb-8">
+                    <strong className="text-2xl xl:text-5xl   font-medium ">
+                      {" "}
+                      Description:{" "}
+                    </strong>
+                  </div>
+                  <p>{singleProb.desc}</p>
+                </div>
+                <div className="mb-5   ">
+                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
+                    <div className="mt-4 text-gray-500 sm:pr-8 ">
+                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                        Input:
+                      </h5>
+                      {testInput.map((data, index) => (
+                        <>
+                          <p key={index} className="subpixel-antialiased">
+                            {"Testcase"} {index + 1}
+                            {": "} {data}
+                          </p>
+                        </>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-5   ">
+                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
+                    <div className="mt-4 text-gray-500 sm:pr-8 ">
+                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                        Output:
+                      </h5>
+                      {testOutput.map((data, index) => (
+                        <>
+                          <p key={index} className="subpixel-antialiased">
+                            {"Testcase"} {index + 1}
+                            {": "} {data}
+                          </p>
+                        </>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="py-3 mb-5  px-4 flex items-center  max-w-xs text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
                   <p>Selected Lang:</p>
 
                   <select
@@ -239,76 +266,10 @@ function Prob() {
                     <option value="Java" className="text-sm text-indigo-800">
                       Java
                     </option>
-                   
                   </select>
                 </div>
-                {wrongAns !== null ? (
-                  <div
-                    className={`p-4 mt-2 ${
-                      wrongAns === false
-                        ? "text-green-700  border-green-900/10 bg-green-50"
-                        : "text-red-700  border-red-900/10 bg-red-50"
-                    }  border rounded`}
-                  >
-                    <strong className="text-sm font-medium">
-                      {" "}
-                      You Are {wrongAns === true ? "Not" : null} Passed{" "}
-                      {answer !== null && wrongAns === true ? answer : null}
-                    </strong>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Page title ends */}
-            <div className="container mx-auto px-6">
-              {/* Remove class [ h-64 ] when adding a card block */}
-              {/* Remove class [ border-dashed border-2 border-gray-300 ] to remove dotted border */}
-              <div className="w-full h-64 rounded  ">
-                <div className="mb-8">
-                  <div className="mb-8">
-                    <strong className="text-2xl xl:text-5xl   font-medium ">
-                      {" "}
-                      Description:{" "}
-                    </strong>
-                  </div>
-                  <p>{singleProb.desc}</p>
-                </div>
-                <div className="mb-10   ">
-                  <div className="my-10  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Input:
-                      </h5>
-                      {
-                        testInput.map((data,index)=>(<>
-                           <p key={index} className ="subpixel-antialiased">
-                        {"Testcase"} {index+1}{": "} {data} 
-                      </p></>))
-                   
-                      }
-                      
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-10   ">
-                  <div className="my-20  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Output:
-                      </h5>
-                      {
-                        testOutput.map((data,index) =>(<>
-                           <p key={index} className="subpixel-antialiased">
-                           {"Testcase"} {index+1}{": "} {data} 
-                      </p></>))
-                   
-                      }
-                    </div>
-                  </div>
-                </div>
-
                 <CodeEditor
+                  minHeight={500}
                   value={code}
                   language={lang}
                   placeholder="Please enter the code."
@@ -321,15 +282,54 @@ function Prob() {
                       "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
                   }}
                 />
-                <Reaptcha
-                  ref={(e) => (refContainer = e)}
-                  sitekey="6LemUxAUAAAAANmEr4N1jZRIw3xQmfNuHZCd7dqa"
-                  onVerify={(recaptchaResponse) => {
-                    getcapchaRes(recaptchaResponse);
-                    setToken(true);
-                  }}
-                  className="mt-10"
-                />
+                <div className=" container px-3 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
+                  <Reaptcha
+                    ref={(e) => (refContainer = e)}
+                    sitekey="6LemUxAUAAAAANmEr4N1jZRIw3xQmfNuHZCd7dqa"
+                    onVerify={(recaptchaResponse) => {
+                      getcapchaRes(recaptchaResponse);
+                      setToken(true);
+                    }}
+                    className="mt-5"
+                  />
+                  <div>
+                    {wrongAns !== null ? (
+                      <div
+                        className={`p-4 mt-2 ${
+                          wrongAns === false
+                            ? "text-green-700  border-green-900/10 bg-green-50"
+                            : "text-red-700  border-red-900/10 bg-red-50"
+                        }  border rounded`}
+                      >
+                        <strong className="text-sm font-medium">
+                          {" "}
+                          You Are {wrongAns === true ? "Not" : null} Passed{" "}
+                          {answer !== null && wrongAns === true ? answer : null}
+                        </strong>
+                      </div>
+                    ) : null}
+                  </div>
+                  <div>
+                    <button
+                      className={`transition duration-150  mx-8 ease-in-out ${
+                        token !== true ? `opacity-50 cursor-not-allowed` : null
+                      } focus:outline-none border bg-indigo-700 rounded text-white px-8 py-2 text-sm`}
+                      onClick={onButtonClick}
+                      disabled={!token}
+                    >
+                      Test
+                    </button>
+                    <button
+                      className={`transition duration-150 ease-in-out ${
+                        token !== true ? `opacity-50 cursor-not-allowed` : null
+                      }   focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm`}
+                      onClick={onClickSubmit}
+                      disabled={!token}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
