@@ -97,11 +97,11 @@ function Prob() {
   }, [lang]);
   const handleClick = async () => {
     setwrongAns(null);
-
+    setProcessing(true);
     await transport
       .post("http://localhost:3001/Testcompiler", {
         code,
-        lang,
+        lang:langsubmit,
         problemId: id.id,
         captcha: capchaRes,
       })
@@ -115,6 +115,7 @@ function Prob() {
       .catch((err) => {
         /* not hit since no 401 */
       });
+      setProcessing(false);
   };
   function handleEditorChange(value, event) {
     setCode(value);
@@ -278,7 +279,7 @@ function Prob() {
                     </div>
                   </div>
                 </div>
-                <div className="container px-3 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
+                <div className="container px-3 mx-auto flex flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <div>
 
                   <p>Selected Lang:</p>
@@ -308,7 +309,7 @@ function Prob() {
                   defaultValue="// some comment"
                   onChange={handleEditorChange}
                 />
-                <div className=" container px-3 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
+                <div className=" container px-3 mx-auto flex  flex-col items-center lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <Reaptcha
                     ref={(e) => (refContainer = e)}
                     sitekey="6LemUxAUAAAAANmEr4N1jZRIw3xQmfNuHZCd7dqa"
@@ -321,7 +322,7 @@ function Prob() {
                   <div>
                     {wrongAns !== null ? (
                       <div
-                        className={`p-4 mt-2 ${
+                        className={`p-4 mt-2  ${
                           wrongAns === false
                             ? "text-green-700  border-green-900/10 bg-green-50"
                             : "text-red-700  border-red-900/10 bg-red-50"
@@ -337,13 +338,13 @@ function Prob() {
                   </div>
                   <div>
                     <button
-                      className={`transition duration-150  mx-8 ease-in-out ${
+                      className={`transition duration-150 mt-5 mx-8 ease-in-out ${
                         token !== true ? `opacity-50 cursor-not-allowed` : null
                       } focus:outline-none border bg-indigo-700 rounded text-white px-8 py-2 text-sm`}
                       onClick={onButtonClick}
                       disabled={!token}
                     >
-                      Test
+                      {processing ? "Loading" : "Test"}
                     </button>
                     <button
                       className={`transition duration-150 ease-in-out ${
