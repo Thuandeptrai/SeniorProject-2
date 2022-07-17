@@ -107,6 +107,7 @@ function Home() {
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
+                  
                 >
                   <path
                     d="M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
@@ -146,7 +147,7 @@ function Home() {
                         {user.problemSolved.includes(data.id) ? (
                           <>
                             {" "}
-                            <tr className="h-16 border bg-green-500 border-gray-100  rounded ">
+                            <tr className="h-16 border bg-green-500 border-gray-100  rounded " key={index}>
                               <td>
                                 <div className="flex items-center pl-5">
                                   <p className="text-base font-medium leading-none text-gray-700 mr-2">
@@ -171,11 +172,11 @@ function Home() {
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
-                                    stroke-width="2"
+                                    strokeWidth="2"
                                     stroke="currentColor"
                                     fill="none"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                   >
                                     <path
                                       stroke="none"
@@ -231,11 +232,11 @@ function Home() {
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
-                                    stroke-width="2"
+                                    strokeWidth="2"
                                     stroke="currentColor"
                                     fill="none"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                   >
                                     <path
                                       stroke="none"

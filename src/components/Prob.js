@@ -2,11 +2,15 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Select from "react-select";
 import Reaptcha from "reaptcha";
+import Editor from "@monaco-editor/react";
+import { defineTheme } from "../lib/defineTheme";
+import ThemeDropdown from "./themeDropDown";
 
 function Prob() {
   const [code, setCode] = React.useState("");
-  const [lang, setLang] = React.useState("cpp");
+  const [lang, setLang] = React.useState( { value: 'cpp', label: 'C/C++' });
   const [token, setToken] = React.useState(false);
   const [singleProb, setsingleProb] = React.useState(null);
   const [capchaRes, getcapchaRes] = React.useState(null);
@@ -17,6 +21,8 @@ function Prob() {
   const [langsubmit, setLangsubmit] = useState(null);
   const [testInput, setTestInput] = useState([]);
   const [testOutput, setTestOutput] = useState([]);
+  const [processing, setProcessing] = useState(null);
+  const [theme, setTheme] = useState("cobalt");
   const id = useParams();
   let refContainer = useRef(null);
 
@@ -32,6 +38,7 @@ function Prob() {
     withCredentials: true,
   });
   const onClickSubmit = async () => {
+    setProcessing(true);
     setwrongAns(null);
     setToken(false);
     refContainer.reset();
@@ -51,6 +58,7 @@ function Prob() {
           setwrongAns(true);
         }
       });
+    setProcessing(false);
   };
   useEffect(() => {
     const getProbSingle = async ({ id }) => {
@@ -76,14 +84,14 @@ function Prob() {
     getProbSingle(id);
   }, [wrongAns]);
   useEffect(() => {
-    if (lang === "Python") {
+    if (lang.value === "python") {
       setLangsubmit("python3");
     }
 
-    if (lang === "Java") {
+    if (lang.value === "java") {
       setLangsubmit("java");
     }
-    if (lang === "cpp") {
+    if (lang.value === "cpp") {
       setLangsubmit("cpp");
     }
   }, [lang]);
@@ -108,7 +116,31 @@ function Prob() {
         /* not hit since no 401 */
       });
   };
+  function handleEditorChange(value, event) {
+    setCode(value);
+  }
+  function handleThemeChange(th) {
+    const theme = th;
+    console.log("theme...", theme);
 
+    if (["light", "vs-dark"].includes(theme.value)) {
+      setTheme(theme);
+    } else {
+      defineTheme(theme.value).then((_) => setTheme(theme.value));
+    }
+  }
+  console.log(theme)
+  useEffect(() => {
+    defineTheme("oceanic-next").then((_) =>
+      setTheme({ value: "oceanic-next", label: "Oceanic Next" })
+    );
+  }, []);
+  const options = [
+    { value: 'cpp', label: 'C/C++' },
+    { value: 'python', label: 'Python' },
+    { value: 'java', label: 'Java' },
+  ];
+  
   return (
     <>
       {singleProb !== null ? (
@@ -163,15 +195,14 @@ function Prob() {
                       <svg
                         className="mr-2"
                         xmlns="http://www.w3.org/2000/svg"
-                        class="icon icon-tabler icon-tabler-user"
                         width="24"
                         height="24"
                         viewBox="0 0 24 24"
-                        stroke-width="2"
+                        strokeWidth="2"
                         stroke="currentColor"
                         fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
                         <path
                           stroke="none"
@@ -247,40 +278,35 @@ function Prob() {
                     </div>
                   </div>
                 </div>
-                <div className="py-3 mb-5  px-4 flex items-center  max-w-xs text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+                <div className="container px-3 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
+                  <div>
+
                   <p>Selected Lang:</p>
 
-                  <select
-                    onChange={(e) => {
-                      setLang(e.target.value);
-                    }}
+                  <Select
+                    onChange={setLang}
+                    options={options}
                     value={lang}
+                    defaultValue={lang}
                     className="focus:outline-none bg-transparent ml-1"
-                  >
-                    <option value="cpp" className="text-sm text-indigo-800">
-                      C/C++
-                    </option>
-                    <option value="Python" className="text-sm text-indigo-800">
-                      Python
-                    </option>
-                    <option value="Java" className="text-sm text-indigo-800">
-                      Java
-                    </option>
-                  </select>
+                    isSearchable={false}
+                  />
+                   
+                  </div>
+
+                  <div>
+
+                  <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
+                  </div>
                 </div>
-                <CodeEditor
-                  minHeight={500}
+                <Editor
+                  height="65vh"
+                  width={`100%`}
+                  language={lang.value || "javascript"}
                   value={code}
-                  language={lang}
-                  placeholder="Please enter the code."
-                  onChange={(evn) => setCode(evn.target.value)}
-                  padding={15}
-                  style={{
-                    fontSize: 30,
-                    backgroundColor: "#f5f5f5",
-                    fontFamily:
-                      "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
-                  }}
+                  theme={theme}
+                  defaultValue="// some comment"
+                  onChange={handleEditorChange}
                 />
                 <div className=" container px-3 mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <Reaptcha
@@ -326,7 +352,7 @@ function Prob() {
                       onClick={onClickSubmit}
                       disabled={!token}
                     >
-                      Submit
+                      {processing ? "Loading" : "Submit"}
                     </button>
                   </div>
                 </div>
