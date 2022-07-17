@@ -24,12 +24,12 @@ function Home() {
     await getProblem
       .get(`http://localhost:3001/problem/${mode}/${probsize}`)
       .then((newProb) => {
-        if (newProb.data !== "Full") {
-          for (let i = 0; i < newProb.data.length; i++) {
-            setProb((oldArray) => [...oldArray, newProb.data[i]]);
+        if (newProb.data.getProb !== "Full") {
+          for (let i = 0; i < newProb.data.getProb.length; i++) {
+            setProb((oldArray) => [...oldArray, newProb.data.getProb[i]]);
           }
         }
-        if (newProb.data === "Full") {
+        if (newProb.data.hasMore === false) {
           setHide(true);
         }
       });
@@ -39,10 +39,10 @@ function Home() {
       await getProblem
         .get(`http://localhost:3001/problem/${mode}/0`)
         .then((prob) => {
-          setProb(prob.data);
+          setProb(prob.data.getProb);
         });
     };
-
+    setHide(false)
     getProb();
   }, [mode]);
   return (
@@ -75,9 +75,9 @@ function Home() {
               </div>
             </div>
           </div>
-          <div className="bg-white py-4 md:py-7 px-4 md:px-8 xl:px-10">
-            <div className="sm:flex items-center justify-between">
-              <div className="flex items-center">
+          <div className="bg-white py-4 md:py-4 px-4 md:px-8 xl:px-10">
+            <div className="sm:flex items-center justify-between ">
+              <div className="flex items-center mb-5">
                 <a href="/">
                   <div className="py-2 px-8 bg-indigo-100 text-indigo-700 rounded-full">
                     <p>All</p>
@@ -94,9 +94,9 @@ function Home() {
                   </div>
                 </a>
               </div>
-              <div className=" flex justify-start items-center  relative">
+              <div className=" flex justify-start  items-center  relative">
                 <input
-                  className="text-sm leading-none text-left text-gray-600 px-4 py-3 w-full border rounded border-gray-300  outline-none"
+                  className="text-sm leading-none  text-left text-gray-600 px-4 py-3 w-full border rounded border-gray-300  outline-none"
                   type="text"
                   placeholder="Search"
                 />
@@ -107,7 +107,6 @@ function Home() {
                   viewBox="0 0 24 24"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  
                 >
                   <path
                     d="M10 17C13.866 17 17 13.866 17 10C17 6.13401 13.866 3 10 3C6.13401 3 3 6.13401 3 10C3 13.866 6.13401 17 10 17Z"
@@ -146,25 +145,27 @@ function Home() {
                       <>
                         {user.problemSolved.includes(data.id) ? (
                           <>
-                            {" "}
-                            <tr className="h-16 border bg-green-500 border-gray-100  rounded " key={index}>
+                            <tr
+                              className="h-16 border bg-green-500 border-gray-100  rounded "
+                              key={index}
+                            >
                               <td>
-                                <div className="flex items-center pl-5">
+                                <div className="flex bg-green-500 items-center pl-5">
                                   <p className="text-base font-medium leading-none text-gray-700 mr-2">
                                     {data.title}
                                   </p>
                                 </div>
                               </td>
 
-                              <td className="pl-5 invisible lg:visible"></td>
-                              <td className="pl-5 invisible lg:visible"></td>
-                              <td className="pl-5 invisible lg:visible">
+                              <td className="pl-5 bg-green-500 "></td>
+                              <td className="pl-5 bg-green-500  "></td>
+                              <td className="pl-5 bg-green-500  ">
                                 <Moment
                                   date={data.createdAt}
                                   format="DD-MM-YYYY"
                                 />
                               </td>
-                              <td className="pl-5 invisible lg:visible">
+                              <td className="pl-5  bg-green-500 ">
                                 <div className="flex gap-0 justify-center">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -202,11 +203,10 @@ function Home() {
                                   View
                                 </button>
                               </td>
-                            </tr>{" "}
+                            </tr>
                           </>
                         ) : (
                           <>
-                            {" "}
                             <tr className="h-16 border border-gray-100  rounded ">
                               <td>
                                 <div className="flex items-center pl-5">
@@ -262,7 +262,7 @@ function Home() {
                                   View
                                 </button>
                               </td>
-                            </tr>{" "}
+                            </tr>
                           </>
                         )}
 

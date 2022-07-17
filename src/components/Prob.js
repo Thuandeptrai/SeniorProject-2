@@ -282,7 +282,7 @@ function Prob() {
                 <div className="container px-3 mx-auto flex flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <div>
 
-                  <p>Selected Lang:</p>
+                 
 
                   <Select
                     onChange={setLang}
