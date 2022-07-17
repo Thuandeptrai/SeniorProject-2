@@ -4,12 +4,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Moment from "react-moment";
 
-function Home() {
-  const user = useContext(userContext);
+function Search() {
+    const user = useContext(userContext);
   const [show, setShow] = useState(null);
   const [prob, setProb] = useState([]);
   const [mode, setMode] = useState("desc");
   const [hide, setHide] = useState(false);
+  const [query, setQuery] = useState("")
   const getProblem = axios.create({
     withCredentials: true,
   });
@@ -22,7 +23,9 @@ function Home() {
     e.preventDefault();
     let probsize = prob.length;
     await getProblem
-      .get(`http://localhost:3001/problem/${mode}/${probsize}`)
+      .post(`http://localhost:3001/problem/find/${mode}/${probsize}`,{
+        query
+      })
       .then((newProb) => {
         if (newProb.data.getProb !== "Full") {
           for (let i = 0; i < newProb.data.getProb.length; i++) {
@@ -37,21 +40,19 @@ function Home() {
   useEffect(() => {
     const getProb = async () => {
       await getProblem
-        .get(`http://localhost:3001/problem/${mode}/0`)
+        .post(`http://localhost:3001/problem/find/${mode}`,{
+            query
+        })
         .then((prob) => {
           setProb(prob.data.getProb);
         });
     };
     setHide(false);
     getProb();
-  }, [mode]);
-
+  }, [mode,query]);
   return (
     <>
-      <div>
-        <div className="sm:px-6 w-full">
-          <div className="px-4 md:px-10 py-4 md:py-7">
-            <div className="flex items-center justify-between">
+     <div className="flex px-10 my-3 items-center justify-between">
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">
                 Problems
               </p>
@@ -60,7 +61,6 @@ function Home() {
                 <select
                   className="focus:outline-none bg-transparent ml-1"
                   onChange={(e) => {
-                    setMode(e.target.value);
                   }}
                 >
                   <option className="text-sm text-indigo-800" value="desc">
@@ -75,8 +75,7 @@ function Home() {
                 </select>
               </div>
             </div>
-          </div>
-          <div className="bg-white py-4 md:py-4 px-4 md:px-8 xl:px-10">
+            <div className="bg-white py-4 md:py-4 px-4 md:px-8 xl:px-10">
             <div className="sm:flex items-center justify-between ">
               <div className="flex items-center mb-5">
                 <a href="/">
@@ -100,6 +99,8 @@ function Home() {
                   className="text-sm leading-none  text-left text-gray-600 px-4 py-3 w-full border rounded border-gray-300  outline-none"
                   type="text"
                   placeholder="Search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
                 <svg
                   className="absolute right-3 z-10 cursor-pointer"
@@ -124,24 +125,14 @@ function Home() {
                     strokeLinejoin="round"
                   />
                 </svg>
+                
               </div>
-              {user.isAdmin === true ? (
-                <>
-                  <button
-                    onClick="popuphandler(true)"
-                    className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
-                  >
-                    <p className="text-sm font-medium leading-none text-white">
-                      Create Problem
-                    </p>
-                  </button>
-                </>
-              ) : null}
+              
             </div>
             <div className="mt-7 overflow-x-auto">
               <table className="w-full whitespace-nowrap table-auto">
                 <tbody>
-                  {prob &&
+                {prob &&
                     prob.map((data, index) => (
                       <>
                         {user.problemSolved.includes(data.id) ? (
@@ -273,8 +264,7 @@ function Home() {
                 </tbody>
               </table>
             </div>
-          </div>
-          {hide !== true ? (
+            {hide !== true ? (
             <div className="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
               <button
                 type="submit"
@@ -288,16 +278,9 @@ function Home() {
               </button>
             </div>
           ) : null}
-        </div>
-
-        <style>
-          {` .checkbox:checked + .check-icon {
-                display: flex;
-            }`}
-        </style>
-      </div>
+          </div>
     </>
   );
 }
 
-export default Home;
+export default Search;

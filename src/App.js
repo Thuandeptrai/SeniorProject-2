@@ -2,6 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
 import axios from "axios";
+import Search from "./pages/Search";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -58,6 +59,10 @@ const App = () => {
               <Route
                 path="/login"
                 element={user ? <Navigate to="/" /> : <Login />}
+              />
+              <Route 
+                path="/search"
+                element={user ? <Search /> :  <Navigate to="/" />}
               />
               <Route
                 path="/prob/:id"
