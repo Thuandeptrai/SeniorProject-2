@@ -7,15 +7,29 @@ router.get("/desc/:id" , async(req,res) =>
 {
   const ProbId = req.params;
   const maxProb = await Prob.count({isPrivate:false});
-  if(ProbId.id === maxProb || ProbId.id >= maxProb)
+  if( ProbId.id > maxProb)
   {
-    res.status(200).json("Full")
+    res.status(200).json({getProb : "Full"})
   }else
   {
 
-  const limitId = req.params
-  const getProb = await Prob.find({isPrivate:false}).skip(limitId.id).limit(10).sort({createdAt: -1})
-  res.status(200).json(getProb)
+  
+  const getProb = await Prob.find({isPrivate:false}).skip(ProbId.id).limit(10).sort({createdAt: -1})
+  let hasMore =true 
+  let a = 0
+  a = (parseInt(ProbId.id) + 10)
+  if(a === maxProb || a >= maxProb)
+  {
+ 
+   
+    res.status(200).json({getProb, 
+    hasMore: false})
+  }else
+  {
+    res.status(200).json({getProb, 
+      hasMore})
+  }
+
 }
 
 
@@ -24,7 +38,7 @@ router.get("/ascd/:id" , async(req,res) =>
 {
 
   const ProbId = req.params;
-  const maxProb = await Prob.count({});
+  const maxProb = await Prob.count({isPrivate:false});
   if(ProbId.id === maxProb || ProbId.id >= maxProb)
   {
     res.status(200).json("Full")
@@ -33,21 +47,117 @@ router.get("/ascd/:id" , async(req,res) =>
 
   const limitId = req.params
   const getProb = await Prob.find({isPrivate:false}).skip(limitId.id).limit(10).sort({createdAt: 1})
-  res.status(200).json(getProb)
+  let hasMore =true 
+  let a = 0
+  a = (parseInt(ProbId.id) + 10)
+  if(a === maxProb || a >= maxProb)
+  {
+   
+    res.status(200).json({getProb, 
+    hasMore:false})
+  }else
+  {
+    res.status(200).json({getProb, 
+      hasMore})
+  
+  }
+ 
 }
 
   
 })
-router.post("/find" , async (req,res) =>
+router.post("/find/:sort" , async (req,res) =>
 {
+    sortquery = req.params.sort
    query = req.body.query
-   const getProb = await Prob.find({title : new RegExp(query, 'i')})
+   const getLimitedQuery = await Prob.count({title : new RegExp(query, 'i'),isPrivate:false})
+   console.log(getLimitedQuery)
+   if(sortquery === "desc")
+   {
+
+   const getProb = await Prob.find({title : new RegExp(query, 'i'),isPrivate:false}).limit(5).sort({createdAt: -1})
    if(getProb.length !== 0)
    {
-    res.status(200).json(getProb)
+    if(getLimitedQuery < 5)
+    {
+
+      res.status(200).json({getProb,hasMore: false})
+    }else
+    {
+      res.status(200).json({getProb,hasMore: true})
+    }
    }else
    {
     res.status(404).json("Not Found")
    }
+  }else
+  {
+    const getProb = await Prob.find({title : new RegExp(query, 'i'),isPrivate:false}).limit(5).sort({createdAt: 1})
+   if(getProb.length !== 0)
+   {
+    if(getLimitedQuery < 5)
+    {
+
+      res.status(200).json({getProb,hasMore: false})
+    }else
+    {
+      res.status(200).json({getProb,hasMore: true})
+    }
+   }else
+   {
+    res.status(404).json("Not Found")
+   }
+  }
+
 })
+router.post("/find/:sort/:id" , async (req,res) =>
+{
+  sortquery = req.params.sort
+    let probPaginate = req.params
+   query = req.body.query
+   const getLimitedQuery = await Prob.count({title : new RegExp(query, 'i'),isPrivate:false})
+   if(sortquery === "desc")
+   {
+
+   const getProb = await Prob.find({title : new RegExp(query, 'i')}).skip(probPaginate.id).limit(5)
+    let limited = parseInt(probPaginate.id) + 5
+   if(getProb.length !== 0)
+   {
+    if(limited > getLimitedQuery || limited === getLimitedQuery)
+    {
+
+      res.status(200).json({getProb,hasMore: false})
+    }else
+    {
+      res.status(200).json({getProb,hasMore: true})
+    }
+   }else
+   {
+    res.status(404).json("Not Found")
+   }
+  }else
+  {
+    const getProb = await Prob.find({title : new RegExp(query, 'i')}).skip(probPaginate.id).limit(5)
+    let limited = parseInt(probPaginate.id) + 5
+   if(getProb.length !== 0)
+   {
+    if(limited > getLimitedQuery || limited === getLimitedQuery)
+    {
+
+      res.status(200).json({getProb,hasMore: false})
+    }else
+    {
+      res.status(200).json({getProb,hasMore: true})
+    }
+   }else
+   {
+    res.status(404).json("Not Found")
+   }
+  }
+
+})
+
+
+
+
 module.exports = router
