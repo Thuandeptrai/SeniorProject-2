@@ -4,6 +4,12 @@ const conTest = new mongoose.Schema(
     id: {
       type: String,
     },
+    title:{
+      type:String
+    },
+    Description:{
+      type:String,
+    },
     whoCreated:
     {
       type: String
@@ -21,10 +27,10 @@ const conTest = new mongoose.Schema(
       type: Object,
     },
     dateStarted: {
-      type: Date,
+      type: String,
     },
     dateEnded: {
-      type: Date,
+      type: String,
     },
     problem: {
       type: Array,
