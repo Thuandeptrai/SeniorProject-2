@@ -61,6 +61,7 @@ function Search() {
                 <select
                   className="focus:outline-none bg-transparent ml-1"
                   onChange={(e) => {
+                    setMode(e.target.value)
                   }}
                 >
                   <option className="text-sm text-indigo-800" value="desc">

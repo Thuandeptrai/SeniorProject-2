@@ -62,7 +62,26 @@ const App = () => {
               />
               <Route 
                 path="/search"
-                element={user ? <Search /> :  <Navigate to="/" />}
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        <Search />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
               />
               <Route
                 path="/prob/:id"
