@@ -12,7 +12,7 @@ router.get("/login/success", async (req, res) => {
         name: req.user.displayName,
         problemSolved: [],
         problemWrong: [],
-
+        contestJoined: [],
         cookies: req.cookies,
       });
       await newUser.save().then(() => {
@@ -51,14 +51,9 @@ router.get("/google", passport.authenticate("google", { scope: ["profile"] }));
 
 router.get(
   "/google/callback",
-  passport.authenticate(
-    "google",
-    {
-      successRedirect: CLIENT_URL,
-      failureRedirect: "/login/failed",
-      
-    },
-    
-  )
+  passport.authenticate("google", {
+    successRedirect: CLIENT_URL,
+    failureRedirect: "/login/failed",
+  })
 );
 module.exports = router;

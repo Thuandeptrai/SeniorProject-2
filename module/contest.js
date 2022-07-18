@@ -1,28 +1,39 @@
 const mongoose = require("mongoose");
 const conTest = new mongoose.Schema(
   {
-    id:{
-        type:String,
+    id: {
+      type: String,
     },
-    probList:{
-        type: Array,
+    whoCreated:
+    {
+      type: String
     },
-    user:{
-        type: Array,
+    probList: {
+      type: Array,
     },
-    isPrivated:{
-        type: Boolean,
+    user: {
+      type: Array,
     },
-    whoFinished:{
-        type: Object
-    }
-    
-
+    isPrivated: {
+      type: Boolean,
+    },
+    whoFinished: {
+      type: Object,
+    },
+    dateStarted: {
+      type: Date,
+    },
+    dateEnded: {
+      type: Date,
+    },
+    problem: {
+      type: Array,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const ConTest = mongoose.model("conTest", conTest);
-module.exports = ConTest;
+const Contest = mongoose.model("Contest", conTest);
+module.exports = Contest;
