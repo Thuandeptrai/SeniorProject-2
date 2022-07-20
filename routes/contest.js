@@ -41,38 +41,44 @@ router.post("/createContest", verifyUserIsAdmin, async (req, res) => {
       });
     })
     .catch(() => {
+      
+      
       res.status(500).json("Error");
     });
 });
 
 router.get("/getAll", async (req, res) => {
   const Time = Date.now();
-  const getAllContest = await Contest.find({ isPrivated: false });
-  let allContest = [];
-  for (let i = 0; i < getAllContest.length; i++) {
-    if (parseInt(Time) < parseInt(getAllContest[i].dateEnded)) {
-      let a = {};
-      if (
-        parseInt(Time) === parseInt(getAllContest[i].dateStarted) ||
-        parseInt(Time) > parseInt(getAllContest[i].dateStarted)
-      ) {
-        a = {
-          title: getAllContest[i].title,
-          desc: getAllContest[i].Description,
-          status: "On Going",
-        };
-      } else {
-        a = {
-          title: getAllContest[i].title,
-          desc: getAllContest[i].Description,
-          status: "Not Start",
-        };
-      }
+  try {
+    const getAllContest = await Contest.find({ isPrivated: false });
+    let allContest = [];
+    for (let i = 0; i < getAllContest.length; i++) {
+      if (parseInt(Time) < parseInt(getAllContest[i].dateEnded)) {
+        let a = {};
+        if (
+          parseInt(Time) === parseInt(getAllContest[i].dateStarted) ||
+          parseInt(Time) > parseInt(getAllContest[i].dateStarted)
+        ) {
+          a = {
+            title: getAllContest[i].title,
+            desc: getAllContest[i].Description,
+            status: "On Going",
+          };
+        } else {
+          a = {
+            title: getAllContest[i].title,
+            desc: getAllContest[i].Description,
+            status: "Not Start",
+          };
+        }
 
-      allContest.push(a);
+        allContest.push(a);
+      }
     }
+    res.status(200).json(allContest);
+  } catch (err) {
+    res.status(500).json("Something Wrong");
   }
-  res.status(200).json(allContest);
 });
 
 router.get("/singleContest/:id", async (req, res) => {
@@ -85,10 +91,13 @@ router.get("/singleContest/:id", async (req, res) => {
       parseInt(Time) > parseInt(getContest[0].dateStarted) &&
       parseInt(Time) < parseInt(getContest[0].dateEnded)
     ) {
-      if (getContest[0].user.includes(getUser[0].id) || getUser[0].isAdmin === true) {
+      if (
+        getContest[0].user.includes(getUser[0].id) ||
+        getUser[0].isAdmin === true
+      ) {
         res.status(200).json(getContest);
       } else {
-        res.status(200).json("You are not Allowed");
+        res.status(200).json("You are not allowed");
       }
     } else {
       res.status(200).json("The Contest does not start");
