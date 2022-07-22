@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const Contest = require("../module/contest");
 const User = require("../module/user");
+const contestTicket = require("../module/contestTicket");
 
 const { v4: uuidv4 } = require("uuid");
 const { verifyUserIsAdmin } = require("../verifyToken");
@@ -35,14 +36,20 @@ router.post("/createContest", verifyUserIsAdmin, async (req, res) => {
   });
   await newContest
     .save()
-    .then(() => {
-      res.status(200).json({
+    .then(async () => {
+      for (let i = 0; i < user.length; i++) {
+        newTicket = new contestTicket({
+          contestId: id,
+          userId: user[i],
+        });
+        await newTicket.save();
+      }
+
+      await res.status(200).json({
         newContest,
       });
     })
     .catch(() => {
-      
-      
       res.status(500).json("Error");
     });
 });
@@ -119,5 +126,38 @@ router.get("/submit/:probId/:id", async (req, res) => {
     res.status(200).json("Not Oke");
   }
 });
+router.get("/joinContest/:id", async (req, res) => {
+  contestId = req.params.id;
+  user = req.user.id;
+  try {
+    const getContest = await Contest.find({ id: contestId});
+    if(getContest[0].isPrivated !== true)
+    {
 
+    if (getContest.length !==0) {
+      console.log(getContest)
+      if (getContest[0].user.includes(user)) {
+        res.status(200).json("You are already joined");
+      } else {
+        await getContest[0].user.push(user);
+        await Contest.findOneAndUpdate(
+          { id: contestId },
+          { user: getContest[0].user }
+        );
+        const ContestUpdate = await Contest.find({ id: contestId });
+        res.status(200).json(ContestUpdate);
+      }
+    }else
+    {
+      res.status(200).json("Incorrect id")
+    }
+  }else
+  {
+    res.status(200).json("You Are Not Allowed")
+  }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json("Something went wrong");
+  }
+});
 module.exports = router;
