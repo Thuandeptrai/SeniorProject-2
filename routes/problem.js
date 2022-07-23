@@ -94,7 +94,7 @@ router.post("/find/:sort/:id", async (req, res) => {
     isPrivate: false,
   });
   if (sortquery === "desc") {
-    const getProb = await Prob.find({ title: new RegExp(query, "i") })
+    const getProb = await Prob.find({ title: new RegExp(query, "i")})
       .skip(probPaginate.id)
       .sort({ createdAt: -1 })
       .limit(5);

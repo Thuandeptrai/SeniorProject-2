@@ -37,10 +37,15 @@ router.post("/createContest", verifyUserIsAdmin, async (req, res) => {
   await newContest
     .save()
     .then(async () => {
+      var probListTicket = [];
+      for (let i = 0; i < probList.length; i++) {
+        await probListTicket.push("");
+      }
       for (let i = 0; i < user.length; i++) {
         newTicket = new contestTicket({
           contestId: id,
           userId: user[i],
+          problemList: probListTicket,
         });
         await newTicket.save();
       }
@@ -114,9 +119,10 @@ router.get("/singleContest/:id", async (req, res) => {
   }
 });
 router.get("/submit/:probId/:id", async (req, res) => {
-  const contestParams = req.params;
+  const contestParams = req.params.id;
+  const probId = req.params.probId;
   const Time = Date.now();
-  const getContest = await Contest.find({ id: contestParams.id });
+  const getContest = await Contest.find({ id: contestParams });
   if (
     parseInt(Time) > parseInt(getContest[0].dateStarted) &&
     parseInt(Time) < parseInt(getContest[0].dateEnded)
@@ -130,31 +136,37 @@ router.get("/joinContest/:id", async (req, res) => {
   contestId = req.params.id;
   user = req.user.id;
   try {
-    const getContest = await Contest.find({ id: contestId});
-    if(getContest[0].isPrivated !== true)
-    {
-
-    if (getContest.length !==0) {
-      console.log(getContest)
-      if (getContest[0].user.includes(user)) {
-        res.status(200).json("You are already joined");
+    const getContest = await Contest.find({ id: contestId });
+    if (getContest[0].isPrivated !== true) {
+      if (getContest[0].length !== 0) {
+        if (getContest[0].user.includes(user)) {
+          res.status(200).json("You are already joined");
+        } else {
+          var problemList = [];
+          for (let i = 0; i < getContest[0].probList.length; i++) {
+            await problemList.push("");
+          }
+          const newTicketUser = new contestTicket({
+            contestId,
+            userId: user,
+            grade: 0,
+            problemList,
+          });
+          await newTicketUser.save();
+          await getContest[0].user.push(user);
+          await Contest.findOneAndUpdate(
+            { id: contestId },
+            { user: getContest[0].user }
+          );
+          const ContestUpdate = await Contest.find({ id: contestId });
+          res.status(200).json(ContestUpdate);
+        }
       } else {
-        await getContest[0].user.push(user);
-        await Contest.findOneAndUpdate(
-          { id: contestId },
-          { user: getContest[0].user }
-        );
-        const ContestUpdate = await Contest.find({ id: contestId });
-        res.status(200).json(ContestUpdate);
+        res.status(200).json("Incorrect id");
       }
-    }else
-    {
-      res.status(200).json("Incorrect id")
+    } else {
+      res.status(200).json("You Are Not Allowed");
     }
-  }else
-  {
-    res.status(200).json("You Are Not Allowed")
-  }
   } catch (err) {
     console.log(err);
     res.status(500).json("Something went wrong");
