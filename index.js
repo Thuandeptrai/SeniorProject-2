@@ -58,13 +58,17 @@ app.get("/", verifyUserIsAdmin, (req, res) => {
 });
 
 app.use("/auth", authRoute);
+
 app.use("/testcompiler", verifyTokenAndAuthorization, testCompiler);
+
 app.use("/createProblem", verifyUserIsAdmin, createProblem);
+
 app.use("/problem", verifyTokenAndAuthorization, problem);
 
 app.use("/singleproblem", verifyTokenAndAuthorization, singleproblem);
 
 app.use("/submit", verifyTokenAndAuthorization, submitRouter);
+
 app.use("/user", verifyTokenAndAuthorization, userRouter);
 
 app.use("/contest", verifyTokenAndAuthorization, contestRouter);

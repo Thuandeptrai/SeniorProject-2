@@ -32,9 +32,10 @@ const conTest = new mongoose.Schema(
     dateEnded: {
       type: String,
     },
-    problem: {
-      type: Array,
-    },
+
+    gradebyProblem:{
+      type:Array,
+    }
   },
   {
     timestamps: true,
