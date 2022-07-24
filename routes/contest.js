@@ -176,35 +176,39 @@ router.post("/submit/:probId/:id", async (req, res) => {
         for (let i = 0; i < getTicket[0].problemList.length; i++) {
           updateProblist.push(getTicket[0].problemList[i]);
         }
-        console.log(updateProblist);
         var getIndex = getContest[0].probList.indexOf(probId);
         updateProblist[getIndex] = correct.toString();
-        console.log(getTicket[0].problemList);
         var getScore = getContest[0].gradebyProblem[getIndex];
+        var Subtract = 0;
+        var getScoreFinal = 0;
+        let PointPerTest = getScore / problem.realOutput.length;
+
         if (
-          getTicket[0].problemList[getIndex].length === 1 ||
+          getTicket[0].problemList[getIndex].length === 0 ||
           parseInt(getTicket[0].problemList[getIndex]) <
             parseInt(problem.realOutput.length)
         ) {
-          if (parseInt(getTicket[0].problemList[getIndex]) != 1) {
-            let PointPerTest = getScore / problem.realOutput.length;
-            var Subtract =
+          if (parseInt(getTicket[0].problemList[getIndex].length) !== 0) {
+            Subtract =
               getTicket[0].grade -
               parseInt(getTicket[0].problemList[getIndex]) * PointPerTest;
             console.log(Subtract);
+            getScoreFinal = Subtract + getScore;
+          } else {
+            getScoreFinal = getTicket[0].grade + correct * PointPerTest;
+            
           }
-          var getScoreFinal = Subtract + getScore;
-          console.log(getScoreFinal)
+          console.log(getScoreFinal);
           let update2 = await contestTicket.findOneAndUpdate(
             { userId: userId, contestId: contestParams },
             { $set: { grade: parseInt(getScoreFinal) } }
           );
         }
-         let update1 = await contestTicket.findOneAndUpdate(
-           { userId: userId, contestId: contestParams },
-           { $set: { problemList: updateProblist } },
-         { new: true }
-         );
+        let update1 = await contestTicket.findOneAndUpdate(
+          { userId: userId, contestId: contestParams },
+          { $set: { problemList: updateProblist } },
+          { new: true }
+        );
 
         let update33 = await contestTicket.findOne({
           userId: userId,
@@ -249,96 +253,58 @@ router.post("/submit/:probId/:id", async (req, res) => {
         res.status(200).json(`Passed`);
       } else {
         const userId = req.user.id;
+        let indexOfProb = getContest[0].probList.indexOf(probId);
+
         const getUser = await User.findOne({ id: userId });
-        let userUnSolved = getUser.problemWrong;
-        let probUnSolved = problem.wrongAns;
         let userWasSolved = 0;
-        for (let i = 0; i < problem.ans.length; i++) {
-          if (problem.ans[i] === userId) {
-            userWasSolved++;
-          }
+        var updateProblist = [];
+        var getScore = getContest[0].gradebyProblem[indexOfProb];
+        var FinalScore = 0;
+        var PointPerTest = getScore / problem.realOutput.length;
+
+        for (let i = 0; i < getTicket[0].problemList.length; i++) {
+          updateProblist.push(getTicket[0].problemList[i]);
+        }
+        updateProblist[indexOfProb] = correct.toString();
+        if (
+          parseInt(getTicket[0].problemList[indexOfProb]) ===
+          problem.realOutput.length
+        ) {
+          userWasSolved++;
         }
         if (userWasSolved === 0) {
-          if (userUnSolved === null || userUnSolved.length === 0) {
-            userUnSolved = [];
-            let prob = { Problem: problemId, Ans: correct };
-
-            userUnSolved.push(prob);
-
-            let update1 = await User.findOneAndUpdate(
-              { id: userId },
-              { $set: { problemWrong: userUnSolved } },
+          console.log(getTicket[0].problemList[indexOfProb]);
+          if (
+            parseInt(correct) >
+              parseInt(getTicket[0].problemList[indexOfProb]) ||
+            getTicket[0].problemList[indexOfProb].length === 0
+          ) {
+            if (parseInt(getTicket[0].problemList[indexOfProb].length) !== 0) {
+              var Subtract =
+                getTicket[0].grade -
+                parseInt(getTicket[0].problemList[indexOfProb]) * PointPerTest;
+              FinalScore = Subtract + correct * PointPerTest;
+              console.log("SubTract", Subtract);
+              console.log("FinalScore", FinalScore);
+            } else {
+              FinalScore = getTicket[0].grade + correct * PointPerTest;
+            }
+            let update1 = await contestTicket.findOneAndUpdate(
+              { userId: userId, contestId: contestParams },
+              { $set: { problemList: updateProblist } },
               { new: true }
             );
-          } else {
-            let flag = 0;
-            for (let i = 0; i < userUnSolved.length; i++) {
-              if (userUnSolved[i].Problem === problemId) {
-                flag++;
-                if (userUnSolved[i].Ans < correct) {
-                  userUnSolved[i].Ans = correct;
-                }
-              }
-            }
-
-            if (flag === 0) {
-              let prob = { Problem: problemId, Ans: correct };
-              userUnSolved.push(prob);
-              let update1 = await User.findOneAndUpdate(
-                { id: userId },
-                { $set: { problemWrong: userUnSolved } },
-                { new: true }
-              );
-            } else {
-              let update1 = await User.findOneAndUpdate(
-                { id: userId },
-                { $set: { problemWrong: userUnSolved } },
-                { new: true }
-              );
-            }
-          }
-          let flagb = 0;
-          if (probUnSolved === null || probUnSolved.length === 0) {
-            probUnSolved = [];
-            let prob = { id: userId, Ans: correct };
-
-            probUnSolved.push(prob);
-            let update1 = await Prob.findOneAndUpdate(
-              { id: problemId },
-              { $set: { wrongAns: probUnSolved } },
-              { new: true }
+            let update2 = await contestTicket.findOneAndUpdate(
+              { userId: userId, contestId: contestParams },
+              { $set: { grade: parseInt(FinalScore) } }
             );
-          } else {
-            for (let i = 0; i < probUnSolved.length; i++) {
-              if (probUnSolved[i].wrongAns === userId) {
-                flagb++;
-                if (probUnSolved[i].Ans < correct) {
-                  probUnSolved[i].Ans = correct;
-                }
-              }
-            }
-            if (flagb === 0) {
-              let prob = { id: userId, Ans: correct };
-              probUnSolved.push(prob);
-              let update1 = await Prob.findOneAndUpdate(
-                { id: problemId },
-                { $set: { wrongAns: probUnSolved } },
-                { new: true }
-              );
-            } else {
-              let update1 = await Prob.findOneAndUpdate(
-                { id: problemId },
-                { $set: { wrongAns: probUnSolved } },
-                { new: true }
-              );
-            }
           }
         }
 
         res.status(200).json(`${correct}/${ans.length}`);
       }
     } else {
-      res.status(200).json("Not Oke");
+      res.status(200).json("The contest do not open ");
     }
   } catch (err) {
     console.log(err);
@@ -348,38 +314,40 @@ router.post("/submit/:probId/:id", async (req, res) => {
 router.get("/joinContest/:id", async (req, res) => {
   contestId = req.params.id;
   user = req.user.id;
+  const Time = Date.now();
   try {
     const getContest = await Contest.find({ id: contestId });
-    if (getContest[0].isPrivated !== true) {
-      if (getContest[0].length !== 0) {
-        if (getContest[0].user.includes(user)) {
-          res.status(200).json("You are already joined");
-        } else {
-          var problemList = [];
-          for (let i = 0; i < getContest[0].probList.length; i++) {
-            await problemList.push("");
+    if (praseInt(getContest[0].dateEnded) < praseInt(Time))
+      if (getContest[0].isPrivated !== true) {
+        if (getContest[0].length !== 0) {
+          if (getContest[0].user.includes(user)) {
+            res.status(200).json("You are already joined");
+          } else {
+            var problemList = [];
+            for (let i = 0; i < getContest[0].probList.length; i++) {
+              await problemList.push("");
+            }
+            const newTicketUser = new contestTicket({
+              contestId,
+              userId: user,
+              grade: 0,
+              problemList,
+            });
+            await newTicketUser.save();
+            await getContest[0].user.push(user);
+            await Contest.findOneAndUpdate(
+              { id: contestId },
+              { user: getContest[0].user }
+            );
+            const ContestUpdate = await Contest.find({ id: contestId });
+            res.status(200).json(ContestUpdate);
           }
-          const newTicketUser = new contestTicket({
-            contestId,
-            userId: user,
-            grade: 0,
-            problemList,
-          });
-          await newTicketUser.save();
-          await getContest[0].user.push(user);
-          await Contest.findOneAndUpdate(
-            { id: contestId },
-            { user: getContest[0].user }
-          );
-          const ContestUpdate = await Contest.find({ id: contestId });
-          res.status(200).json(ContestUpdate);
+        } else {
+          res.status(200).json("Incorrect id");
         }
       } else {
-        res.status(200).json("Incorrect id");
+        res.status(200).json("You Are Not Allowed");
       }
-    } else {
-      res.status(200).json("You Are Not Allowed");
-    }
   } catch (err) {
     console.log(err);
     res.status(500).json("Something went wrong");
