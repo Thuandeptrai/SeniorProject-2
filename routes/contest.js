@@ -354,13 +354,71 @@ router.get("/joinContest/:id", async (req, res) => {
 });
 
 router.get("/contestTicket", async (req, res) => {
-  const usetId = req.user.id
+  const userId = req.user.id;
   try {
-    const getContestTicket = await contestTicket.find(userId)
-    
+    const getContestTicket = await contestTicket.find({ userId });
+
+    var userContestArr = [];
+    var Time = Date.now();
+    for (let i = 0; i < getContestTicket.length; i++) {
+      let objectRes = {};
+      const getContestinfo = await Contest.findOne({
+        id: getContestTicket[i].contestId,
+      });
+      if (parseInt(getContestinfo.dateEnded) < Time) {
+        userContestArr.push({
+          conTestticket: getContestTicket[i],
+          status: "Ended",
+        });
+      } else if (
+        parseInt(getContestinfo.dateEnded) > Time &&
+        parseInt(getContestinfo.dateStarted) <= Time
+      ) {
+        userContestArr.push({
+          conTestticket: getContestTicket[i],
+          status: "On going",
+        });
+      }else
+      {
+        userContestArr.push({
+          conTestticket: getContestTicket[i],
+          status: "The contest do not started",
+        });
+      }
+    }
+    res.status(200).json(userContestArr);
   } catch (err) {
+    console.log(err);
     res.status(500).json("Something went wrong");
   }
 });
+router.get("/problem/:probId/:contestId", async (req,res) =>
+{
+  const probId = req.params.probId
+  const contestId = req.params.contestId
+  const Time = Date.now()
+  try{
+    const getContest = await Contest.findOne({id: contestId})
+    if(getContest.dateStarted <= Time && Time < getContest.dateEnded )
+    {
+      const getProb = await Prob.findOne({id: probId})
+      if(getProb)
+      {
+        const { realInput, realOutput, ...others } = getProb._doc
+        res.status(200).json(others)
+      }else
+      {
+        res.status(200).json("Not Found")
+      }
+    }else
+    {
+      res.status.json("The contest do not start")
+    }
+  }catch(err)
+  {
+    res.status(500).json("Something went wrong")
+  }
+})
+
 
 module.exports = router;
