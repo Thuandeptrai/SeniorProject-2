@@ -22,22 +22,27 @@ function Home() {
     e.preventDefault();
     let probsize = prob.length;
     await getProblem
-      .get(`http://localhost:3001/problem/${mode}/${probsize}`)
+      .get(`http://localhost:3001/problem/${mode}/${probsize}/0`)
       .then((newProb) => {
         if (newProb.data.getProb !== "Full") {
           for (let i = 0; i < newProb.data.getProb.length; i++) {
             setProb((oldArray) => [...oldArray, newProb.data.getProb[i]]);
           }
         }
+        console.log(newProb.data.hasMore)
         if (newProb.data.hasMore === false) {
           setHide(true);
+        }
+        if(newProb.data.getProb  === "Full")
+        {
+          setHide(true)
         }
       });
   };
   useEffect(() => {
     const getProb = async () => {
       await getProblem
-        .get(`http://localhost:3001/problem/${mode}/0`)
+        .get(`http://localhost:3001/problem/${mode}/0/${prob.length}`)
         .then((prob) => {
           setProb(prob.data.getProb);
         });

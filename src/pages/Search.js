@@ -23,16 +23,21 @@ function Search() {
     e.preventDefault();
     let probsize = prob.length;
     await getProblem
-      .post(`http://localhost:3001/problem/find/${mode}/${probsize}`,{
+      .post(`http://localhost:3001/problem/finds/${mode}/${probsize}`,{
         query
       })
       .then((newProb) => {
-        if (newProb.data.getProb !== "Full") {
+        if (newProb.data.totalLength > prob.length ) {
           for (let i = 0; i < newProb.data.getProb.length; i++) {
             setProb((oldArray) => [...oldArray, newProb.data.getProb[i]]);
+            
           }
+          setHide(false)
         }
         if (newProb.data.hasMore === false) {
+          setHide(true);
+        }
+        if (newProb.data === "Not Found") {
           setHide(true);
         }
       });
@@ -40,11 +45,22 @@ function Search() {
   useEffect(() => {
     const getProb = async () => {
       await getProblem
-        .post(`http://localhost:3001/problem/find/${mode}`,{
+        .post(`http://localhost:3001/problem/find/${mode}/${prob.length}`,{
             query
         })
         .then((prob) => {
-          setProb(prob.data.getProb);
+          
+          if(prob.data === "Not Found")
+          {
+            setHide(true)
+            setProb([])
+            
+          }else
+          {
+            setProb(prob.data.getProb);
+
+          }
+
         });
     };
     setHide(false);
