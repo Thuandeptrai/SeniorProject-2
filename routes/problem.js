@@ -3,15 +3,20 @@ const Prob = require("../module/problems");
 const User = require("../module/user");
 const axios = require("axios");
 
-router.get("/desc/:id", async (req, res) => {
+router.get("/desc/:id/:limit", async (req, res) => {
   const ProbId = req.params;
   const maxProb = await Prob.count({ isPrivate: false });
+  var Limitquery = req.params.limit
+  if(parseInt(Limitquery) === 0)
+  {
+    Limitquery = 10
+  }
   if (ProbId.id > maxProb) {
     res.status(200).json({ getProb: "Full" });
   } else {
     const getProb = await Prob.find({ isPrivate: false })
       .skip(ProbId.id)
-      .limit(10)
+      .limit(Limitquery)
       .sort({ createdAt: -1 });
     let hasMore = true;
     let a = 0;
@@ -23,16 +28,23 @@ router.get("/desc/:id", async (req, res) => {
     }
   }
 });
-router.get("/ascd/:id", async (req, res) => {
+router.get("/ascd/:id/:limit", async (req, res) => {
   const ProbId = req.params;
   const maxProb = await Prob.count({ isPrivate: false });
+  var Limitquery = req.params.limit
+  if(parseInt(Limitquery) === 0)
+  {
+    Limitquery = 10
+  }
+
   if (ProbId.id === maxProb || ProbId.id >= maxProb) {
-    res.status(200).json("Full");
+    res.status(200).json({ getProb: "Full" });
+
   } else {
     const limitId = req.params;
     const getProb = await Prob.find({ isPrivate: false })
       .skip(limitId.id)
-      .limit(10)
+      .limit(Limitquery)
       .sort({ createdAt: 1 });
     let hasMore = true;
     let a = 0;
@@ -44,9 +56,16 @@ router.get("/ascd/:id", async (req, res) => {
     }
   }
 });
-router.post("/find/:sort", async (req, res) => {
+router.post("/find/:sort/:limit", async (req, res) => {
   sortquery = req.params.sort;
   query = req.body.query;
+  var Limitquery = req.params.limit
+  if(query !== "")
+  {
+  if(parseInt(Limitquery) === 0)
+  {
+    Limitquery = 5
+  }
   const getLimitedQuery = await Prob.count({
     title: new RegExp(query, "i"),
     isPrivate: false,
@@ -56,7 +75,7 @@ router.post("/find/:sort", async (req, res) => {
       title: new RegExp(query, "i"),
       isPrivate: false,
     })
-      .limit(5)
+      .limit(Limitquery)
       .sort({ createdAt: -1 });
     if (getProb.length !== 0) {
       if (getLimitedQuery < 5) {
@@ -72,7 +91,7 @@ router.post("/find/:sort", async (req, res) => {
       title: new RegExp(query, "i"),
       isPrivate: false,
     })
-      .limit(5)
+      .limit(Limitquery)
       .sort({ createdAt: 1 });
     if (getProb.length !== 0) {
       if (getLimitedQuery < 5) {
@@ -84,11 +103,17 @@ router.post("/find/:sort", async (req, res) => {
       res.status(404).json("Not Found");
     }
   }
+}else
+{
+  res.status(200).json("Not Found")
+}
+
 });
-router.post("/find/:sort/:id", async (req, res) => {
+router.post("/finds/:sort/:id", async (req, res) => {
   sortquery = req.params.sort;
   let probPaginate = req.params;
   query = req.body.query;
+  
   const getLimitedQuery = await Prob.count({
     title: new RegExp(query, "i"),
     isPrivate: false,
@@ -100,13 +125,13 @@ router.post("/find/:sort/:id", async (req, res) => {
       .limit(5);
     let limited = parseInt(probPaginate.id) + 5;
     if (getProb.length !== 0) {
-      if (limited > getLimitedQuery || limited === getLimitedQuery) {
-        res.status(200).json({ getProb, hasMore: false });
+      if (limited > parseInt(getLimitedQuery)  ) {
+        res.status(200).json({ getProb, hasMore: false ,totalLength: getLimitedQuery});
       } else {
-        res.status(200).json({ getProb, hasMore: true });
+        res.status(200).json({ getProb, hasMore: true ,totalLength:getLimitedQuery});
       }
     } else {
-      res.status(404).json("Not Found");
+      res.status(200).json("Not Found");
     }
   } else {
     const getProb = await Prob.find({ title: new RegExp(query, "i") })
@@ -115,13 +140,13 @@ router.post("/find/:sort/:id", async (req, res) => {
       .limit(5);
     let limited = parseInt(probPaginate.id) + 5;
     if (getProb.length !== 0) {
-      if (limited > getLimitedQuery || limited === getLimitedQuery) {
-        res.status(200).json({ getProb, hasMore: false });
+      if (limited > parseInt(getLimitedQuery)  ) {
+        res.status(200).json({ getProb, hasMore: false ,totalLength: getLimitedQuery});
       } else {
-        res.status(200).json({ getProb, hasMore: true });
+        res.status(200).json({ getProb, hasMore: true ,totalLength:getLimitedQuery});
       }
     } else {
-      res.status(404).json("Not Found");
+      res.status(200).json("Not Found");
     }
   }
 });

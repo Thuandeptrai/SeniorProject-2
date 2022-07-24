@@ -196,9 +196,7 @@ router.post("/submit/:probId/:id", async (req, res) => {
             getScoreFinal = Subtract + getScore;
           } else {
             getScoreFinal = getTicket[0].grade + correct * PointPerTest;
-            
           }
-          console.log(getScoreFinal);
           let update2 = await contestTicket.findOneAndUpdate(
             { userId: userId, contestId: contestParams },
             { $set: { grade: parseInt(getScoreFinal) } }
@@ -284,8 +282,6 @@ router.post("/submit/:probId/:id", async (req, res) => {
                 getTicket[0].grade -
                 parseInt(getTicket[0].problemList[indexOfProb]) * PointPerTest;
               FinalScore = Subtract + correct * PointPerTest;
-              console.log("SubTract", Subtract);
-              console.log("FinalScore", FinalScore);
             } else {
               FinalScore = getTicket[0].grade + correct * PointPerTest;
             }
@@ -317,7 +313,7 @@ router.get("/joinContest/:id", async (req, res) => {
   const Time = Date.now();
   try {
     const getContest = await Contest.find({ id: contestId });
-    if (praseInt(getContest[0].dateEnded) < praseInt(Time))
+    if (praseInt(getContest[0].dateEnded) < praseInt(Time)) {
       if (getContest[0].isPrivated !== true) {
         if (getContest[0].length !== 0) {
           if (getContest[0].user.includes(user)) {
@@ -348,9 +344,23 @@ router.get("/joinContest/:id", async (req, res) => {
       } else {
         res.status(200).json("You Are Not Allowed");
       }
+    } else {
+      res.status(200).json("The contest is ended");
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json("Something went wrong");
   }
 });
+
+router.get("/contestTicket", async (req, res) => {
+  const usetId = req.user.id
+  try {
+    const getContestTicket = await contestTicket.find(userId)
+    
+  } catch (err) {
+    res.status(500).json("Something went wrong");
+  }
+});
+
 module.exports = router;
