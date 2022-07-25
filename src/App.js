@@ -3,10 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { userContext } from "./context/userContext";
 import axios from "axios";
 import Search from "./pages/Search";
+import CreateProb from "./pages/CreateProb";
 
 const App = () => {
   const [user, setUser] = useState(null);
-  let [isAuth, setIsAuth] = React.useState(null);
+  const [isuserAdmin, setUserAdmin] = useState(null);
+  const [isAuth, setIsAuth] = React.useState(null);
   const serverUrl = "http://localhost:3001/auth/login/success";
 
   useEffect(() => {
@@ -15,7 +17,6 @@ const App = () => {
         withCredentials: true,
       });
       transport.get(serverUrl).then((res) => {
-        console.log(res.data);
       });
       await fetch(serverUrl, {
         method: "GET",
@@ -33,6 +34,7 @@ const App = () => {
         .then((resObject) => {
           setUser(resObject.user);
           setIsAuth(true);
+          setUserAdmin(resObject.user.isAdmin);
         })
         .catch((err) => {
           setIsAuth(false);
@@ -60,7 +62,7 @@ const App = () => {
                 path="/login"
                 element={user ? <Navigate to="/" /> : <Login />}
               />
-              <Route 
+              <Route
                 path="/search"
                 element={
                   isAuth !== null ? (
@@ -91,6 +93,33 @@ const App = () => {
                       {" "}
                       {isAuth === true ? (
                         <Prob />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+              <Route
+                path="/createProb"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        isuserAdmin ? (
+                          <CreateProb />
+                        ) : (
+                          <Navigate to="/login" />
+                        )
                       ) : (
                         <Navigate to="/login" />
                       )}{" "}

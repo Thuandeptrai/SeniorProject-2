@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { userContext } from "../context/userContext";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import Moment from "react-moment";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 function Home() {
+  const history = useNavigate();
+
   const user = useContext(userContext);
   const [show, setShow] = useState(null);
   const [prob, setProb] = useState([]);
@@ -29,13 +31,11 @@ function Home() {
             setProb((oldArray) => [...oldArray, newProb.data.getProb[i]]);
           }
         }
-        console.log(newProb.data.hasMore)
         if (newProb.data.hasMore === false) {
           setHide(true);
         }
-        if(newProb.data.getProb  === "Full")
-        {
-          setHide(true)
+        if (newProb.data.getProb === "Full") {
+          setHide(true);
         }
       });
   };
@@ -100,12 +100,15 @@ function Home() {
                   </div>
                 </a>
               </div>
-            
+
               {user.isAdmin === true ? (
                 <>
                   <button
-                    onClick="popuphandler(true)"
                     className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      history("/createProb");
+                    }}
                   >
                     <p className="text-sm font-medium leading-none text-white">
                       Create Problem

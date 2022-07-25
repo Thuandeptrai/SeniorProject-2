@@ -122,7 +122,6 @@ function Prob() {
   }
   function handleThemeChange(th) {
     const theme = th;
-    console.log("theme...", theme);
 
     if (["light", "vs-dark"].includes(theme.value)) {
       setTheme(theme);
@@ -130,7 +129,6 @@ function Prob() {
       defineTheme(theme.value).then((_) => setTheme(theme.value));
     }
   }
-  console.log(theme)
   useEffect(() => {
     defineTheme("oceanic-next").then((_) =>
       setTheme({ value: "oceanic-next", label: "Oceanic Next" })
