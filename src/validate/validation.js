@@ -14,15 +14,15 @@ export const CreateProbSchema = yup.object().shape({
     .required("Full name is a required field!"),
   testInputAndOutPut: yup.array().of(
     yup.object().shape({
-      testOutput: yup.string().required("testOutput is a required field!"),
-      testInput: yup.string().required("testInput is a required field!"),
+      testOutput: yup.string().required("Test Output is a required field!"),
+      testInput: yup.string().required("Test Input is a required field!"),
     })
   ),
   isPrivate: yup.boolean().required("You must set the privacy"),
   realtInputAndOutPut: yup.array().of(
     yup.object().shape({
-      realInput: yup.string().required("realInput is a required field!"),
-      realOutput: yup.string().required("realOutput is a required field!"),
+      realInput: yup.string().required("Real Input is a required field!"),
+      realOutput: yup.string().required("Real Output is a required field!"),
     })
   ),
 });

@@ -4,6 +4,7 @@ import { userContext } from "./context/userContext";
 import axios from "axios";
 import Search from "./pages/Search";
 import CreateProb from "./pages/CreateProb";
+import CreateContest from "./pages/CreateContest";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -16,8 +17,7 @@ const App = () => {
       const transport = axios.create({
         withCredentials: true,
       });
-      transport.get(serverUrl).then((res) => {
-      });
+      transport.get(serverUrl).then((res) => {});
       await fetch(serverUrl, {
         method: "GET",
         credentials: "include",
@@ -117,6 +117,33 @@ const App = () => {
                       {isAuth === true ? (
                         isuserAdmin ? (
                           <CreateProb />
+                        ) : (
+                          <Navigate to="/login" />
+                        )
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+              <Route
+                path="/createContest"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        isuserAdmin ? (
+                          <CreateContest />
                         ) : (
                           <Navigate to="/login" />
                         )

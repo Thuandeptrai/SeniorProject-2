@@ -3,7 +3,7 @@ import { Formik, Field, Form, FieldArray } from "formik";
 import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
 
-function CreateProb() {
+function CreateContest() {
   const [success, setSuccess] = useState(null);
   const hanldeSubmit = async (values) => {
     let testOutput = [];
@@ -313,4 +313,4 @@ function CreateProb() {
   );
 }
 
-export default CreateProb;
+export default CreateContest;
