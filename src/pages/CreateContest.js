@@ -13,6 +13,12 @@ function CreateContest() {
   const [HourStarted, setHourStarted] = useState(0);
   const [MinutesStarted, setMinutesStarted] = useState(0);
   const [SecondsStarted, setSecondsStarted] = useState(0);
+  const [YearEnded, setYearEnded] = useState(0);
+  const [MonthEnded, setMonthEnded] = useState(0);
+  const [DayEnded, setDayEnded] = useState(0);
+  const [HourEnded, setHourEnded] = useState(0);
+  const [MinutesEnded, setMinutesEnded] = useState(0);
+  const [SecondsEnded, setSecondsEnded] = useState(0);
   const [Timezone, setTimezone] = useState(0);
   const getProb = axios.create({
     withCredentials: true,
@@ -36,7 +42,7 @@ function CreateContest() {
         values.SecondsStarted
       )
     );
-    console.log(result)
+    console.log(result);
   };
   useEffect(() => {
     const getAllProb = async () => {
@@ -52,9 +58,15 @@ function CreateContest() {
         });
       var time = format(new Date(), "yyyy-MM-dd''HH:mm:ss");
       setYearStarted(format(new Date(), "yyyy"));
+      setYearEnded(format(new Date(), "yyyy"));
+      setMonthEnded(format(new Date(), "MM"));
+      setDayEnded(format(new Date(), "dd"));
+      setHourEnded(format(new Date(), "HH"));
+      setMinutesEnded(format(new Date(), "mm"));
       setMonthStarted(format(new Date(), "MM"));
       setDayStarted(format(new Date(), "dd"));
       setHourStarted(format(new Date(), "HH"));
+      setSecondsEnded(format(new Date(), "ss"));
       setMinutesStarted(format(new Date(), "mm"));
       setSecondsStarted(format(new Date(), "ss"));
       console.log(format(new Date(), "X"));
@@ -86,12 +98,12 @@ function CreateContest() {
             HourStarted,
             MinutesStarted,
             SecondsStarted,
-            YearEnded: 2022,
-            MonthEnded: 0,
-            DayEnded: 0,
-            HourEnded: 0,
-            MinutesEnded: 0,
-            SecondsEnded: 0,
+            YearEnded,
+            MonthEnded,
+            DayEnded,
+            HourEnded,
+            MinutesEnded,
+            SecondsEnded,
             checked: [],
             grade: [],
             checkedUser: [],
@@ -194,12 +206,12 @@ function CreateContest() {
                                 Selected User
                               </p>
                             </div>
-                            <div className="flex justify-between font-bold ">
+                            <div className="flex flex-col lg:justify-between font-bold lg:flex-row ">
                               <div>
                                 <p>Name</p>
                               </div>
 
-                              <div className="pr-20 font-bold">
+                              <div className="pr-20 font-bold invisible lg:visible">
                                 <p>id</p>
                               </div>
                             </div>
@@ -207,21 +219,23 @@ function CreateContest() {
                               values.getUser.map((probValue, index) => (
                                 <>
                                   <div key={index} className="my-3">
-                                    <div className="flex  justify-between">
+                                    <div className="flex  flex-col lg:justify-between lg:flex-row">
                                       <div className="flex justify-start">
                                         <div>
                                           <Field
                                             name="checkedUser"
                                             type="checkbox"
                                             value={probValue.id}
-                                            className="mr-3"
+                                            className="mr-3 "
                                           />
                                         </div>
-                                        <div className="mr-3">
+                                        <div className="mr-3 ">
                                           {probValue.name}
                                         </div>
                                       </div>
-                                      <div className="mr-3">{probValue.id}</div>
+                                      <div className="mr-3 invisible lg:visible">
+                                        {probValue.id}
+                                      </div>
                                     </div>
                                   </div>
                                 </>
@@ -259,7 +273,7 @@ function CreateContest() {
                                       name={`grade.${index}`}
                                       type="text"
                                       value={probValue.id}
-                                      className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                                      className="text-sm  focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                     />
                                   </div>
                                 </div>
@@ -301,115 +315,120 @@ function CreateContest() {
 
                   <div className="mx-2">{`${values.isPrivate}`}</div>
                 </div>
-                <div className="grid gap-x-8 gap-y-4 grid-cols-6 justify-items-end">
+                <div className="grid gap-y-4  grid-cols-3 lg:grid-cols-6 lg:justify-items-end">
                   <div>
-                    <p>Year Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">Year Started</p>
 
                     <Field
                       type="number"
                       name="yearStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                   <div>
-                    <p>Month Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">Month Started</p>
                     <Field
                       type="number"
                       name="MonthStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                   <div>
-                    <p>Day Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">Day Started</p>
 
                     <Field
                       type="number"
                       name="DayStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
 
                   <div>
                     {" "}
-                    <p>Hour Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">Hour Started</p>
                     <Field
                       type="number"
                       name="HourStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p>Minutes Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">Minutes Started</p>
                     <Field
                       type="number"
                       name="MinutesStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p>Seconds Started</p>
+                    <p className="text-sm lg:text-lg font-bold">Seconds Started</p>
                     <Field
                       type="number"
                       name="SecondsStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                 </div>
-                <div className="grid gap-x-8 gap-y-4 grid-cols-6 justify-items-end">
+                <div className="grid gap-y-4  grid-cols-3  lg:grid-cols-6 lg:justify-items-end">
                   <div>
-                    <p>Year Ended</p>
+                    <p
+                    className="text-sm lg:text-lg font-bold ">Year Ended</p>
 
                     <Field
                       type="number"
                       name="YearEnded"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                   <div>
-                    <p>Month Ended</p>
+                    <p className="text-sm lg:text-lg font-bold">Month Ended</p>
                     <Field
                       type="number"
                       name="MonthEnded"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                    
                     ></Field>
                   </div>
                   <div>
-                    <p>Day Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">Day Ended</p>
 
                     <Field
                       type="number"
                       name="DayEnded"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                    ></Field>
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                   
+                   ></Field>
                   </div>
 
                   <div>
                     {" "}
-                    <p>Hour Ended</p>
+                    <p className="text-sm lg:text-lg font-bold">Hour Ended</p>
                     <Field
                       type="number"
                       name="HourEnded"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                    
                     ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p>Minutes Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">Minutes Ended</p>
                     <Field
                       type="number"
-                      name="MinutesStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                    ></Field>
+                      name="MinutesEnded"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                   
+                   ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p>Seconds Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">Seconds Ended</p>
                     <Field
                       type="number"
-                      name="SecondsStarted"
-                      className="focus:ring-gray-700 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                      name="SecondsEnded"
+                      className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                     ></Field>
                   </div>
                 </div>
