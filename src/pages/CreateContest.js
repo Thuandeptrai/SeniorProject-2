@@ -30,9 +30,8 @@ function CreateContest() {
     let title = [];
     let Description = [];
     let isPrivated = [];
-    let dateStarted = [];
     let gradebyProblem = [];
-    const result = getUnixTime(
+    var dateStarted = parseInt(getUnixTime(
       new Date(
         values.yearStarted,
         values.MonthStarted - 1,
@@ -40,9 +39,33 @@ function CreateContest() {
         values.HourStarted,
         values.MinutesStarted,
         values.SecondsStarted
-      )
+      ))*1000
     );
-    console.log(result);
+  
+    var dateEnded = parseInt(getUnixTime(
+      new Date(
+        values.YearEnded,
+        values.MonthEnded - 1,
+        values.DayEnded,
+        values.HourEnded,
+        values.MinutesEnded,
+        values.SecondsEnded
+      )
+    ))*1000;
+    await getProb.post("http://localhost:3001/contest/createContest",{
+      probList:values.checked,
+      gradebyProblem:values.grade,
+      user1:values.checkedUser,
+      isPrivated:values.isPrivate,
+      title:values.Title,
+      Description:values.Description,
+      dateStarted:dateStarted,
+      dateEnded:dateEnded
+    }).then((res)=>
+    {
+      setSuccess(true)
+      console.log(res.data)
+    })
   };
   useEffect(() => {
     const getAllProb = async () => {
