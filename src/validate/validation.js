@@ -26,3 +26,21 @@ export const CreateProbSchema = yup.object().shape({
     })
   ),
 });
+
+export const CreateContestSchema = yup.object().shape({
+  Title: yup
+    .string()
+    .min(3, "Username must be at least 3 characters long!")
+    .max(30, "Username must be 30 characters at most!")
+    .required("Username is a required field!")
+    .strict(),
+  Description: yup
+    .string()
+    .min(3, "Full name must be at least 3 characters long!")
+    .max(256, "Full name must be 34 characters at most!")
+    .required("Full name is a required field!"),
+    grade: yup.array().of(yup.number().min(2).required("Username is a required field!")).required("This field must be a number"),
+    checked: yup.array().of(yup.string()).min(1, 'The error message if length === 0 | 1').required("This field must be a number"),
+    checkedUser: yup.array().of(yup.string()).min(1, 'The error message if length === 0 | 1').required("This field must be a number")
+
+  });

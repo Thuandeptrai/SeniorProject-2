@@ -297,15 +297,15 @@ function CreateProb() {
         </Formik>
         {success !== null ? (
           <div
-          className={`p-4 mt-2  ${
-            success === true
+            className={`p-4 mt-2  ${
+              success === true
                 ? "text-green-700  border-green-900/10 bg-green-50"
                 : "text-red-700  border-red-900/10 bg-red-50"
             }  border rounded`}
           >
             <strong className="text-sm font-medium">
               {success === true ? "Success" : "Something went wrong"}
-             </strong>
+            </strong>
           </div>
         ) : null}
       </div>
