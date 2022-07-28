@@ -146,7 +146,6 @@ function CreateContest() {
         >
           {({ isSubmitting, isValid, errors, remove, values, touched }) => (
             <>
-              {console.log(values.yearStarted)}
               <Form className="w-full grid grid-cols-1 gap-4 place-items-stretch">
                 <Field
                   name="Title"
@@ -183,7 +182,7 @@ function CreateContest() {
                           <div>
                             <div className="flex justify-center">
                               <p className="flex justify-center w-full text-center text-xl font-bold mb-5">
-                                Selected Problem
+                                Selected Problem (Must be private)
                               </p>
                             </div>
                             {values.getAll !== null &&
@@ -283,7 +282,7 @@ function CreateContest() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
-                        <p className="font-bold">Grade by problem</p>
+                        <p className="font-bold">Grade by problem (the total grade must equal 100)</p>
                         {values.checked !== null &&
                           values.checked.length !== 0 &&
                           values.checked.map((probValue, index) => (
