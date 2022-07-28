@@ -67,7 +67,13 @@ router.get("/getAll", async (req, res) => {
   const getUserId = req.user.id;
   try {
     const getAllContest = await Contest.find({ isPrivated: false });
-
+    const getAllContestUser = await Contest.find({
+      isPrivated: true,
+      user: getUserId,
+    });
+    for (let i = 0; i < getAllContestUser.length; i++) {
+      getAllContest.push(getAllContestUser[i]);
+    }
     let allContest = [];
     for (let i = 0; i < getAllContest.length; i++) {
       if (parseInt(Time) < parseInt(getAllContest[i].dateEnded)) {
@@ -143,14 +149,12 @@ router.get("/singleContest/:id", async (req, res) => {
           }
           ProbDetail.push({ others });
         }
-        res
-          .status(200)
-          .json({
-            getContest,
-            probDetail: ProbDetail,
-            grade: getContestTicket[0],
-            passed: checkGrade,
-          });
+        res.status(200).json({
+          getContest,
+          probDetail: ProbDetail,
+          grade: getContestTicket[0],
+          passed: checkGrade,
+        });
       } else {
         res.status(200).json("You are not allowed");
       }
@@ -522,8 +526,7 @@ router.post("/testCompiler/:probId/:contestId", async (req, res) => {
       if (correct == myArry.length) {
         res.status(200).json("Passed");
       } else {
-        
-          res.status(200).json("You are not passed");
+        res.status(200).json("You are not passed");
       }
     } else {
       res.status(200).json("The contest do not open ");
