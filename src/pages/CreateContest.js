@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Formik, Field, Form, FieldArray } from "formik";
-import { CreateContestSchema, CreateProbSchema } from "../validate/validation";
 import axios from "axios";
-import { compareAsc, format, parseISO, getUnixTime } from "date-fns";
+import { format, getUnixTime } from "date-fns";
+import { Field, FieldArray, Form, Formik } from "formik";
+import React, { useEffect, useState } from "react";
+import { CreateContestSchema } from "../validate/validation";
 function CreateContest() {
   const [success, setSuccess] = useState(null);
   const [getAll, setgetAll] = useState(null);
@@ -31,41 +31,47 @@ function CreateContest() {
     let Description = [];
     let isPrivated = [];
     let gradebyProblem = [];
-    var dateStarted = parseInt(getUnixTime(
-      new Date(
-        values.yearStarted,
-        values.MonthStarted - 1,
-        values.DayStarted,
-        values.HourStarted,
-        values.MinutesStarted,
-        values.SecondsStarted
-      ))*1000
+
+    var dateStarted = parseInt(
+      getUnixTime(
+        new Date(
+          values.yearStarted,
+          values.MonthStarted - 1,
+          values.DayStarted,
+          values.HourStarted,
+          values.MinutesStarted,
+          values.SecondsStarted
+        )
+      ) * 1000
     );
-  
-    var dateEnded = parseInt(getUnixTime(
-      new Date(
-        values.YearEnded,
-        values.MonthEnded - 1,
-        values.DayEnded,
-        values.HourEnded,
-        values.MinutesEnded,
-        values.SecondsEnded
-      )
-    ))*1000;
-    await getProb.post("http://localhost:3001/contest/createContest",{
-      probList:values.checked,
-      gradebyProblem:values.grade,
-      user1:values.checkedUser,
-      isPrivated:values.isPrivate,
-      title:values.Title,
-      Description:values.Description,
-      dateStarted:dateStarted,
-      dateEnded:dateEnded
-    }).then((res)=>
-    {
-      setSuccess(true)
-      console.log(res.data)
-    })
+
+    var dateEnded =
+      parseInt(
+        getUnixTime(
+          new Date(
+            values.YearEnded,
+            values.MonthEnded - 1,
+            values.DayEnded,
+            values.HourEnded,
+            values.MinutesEnded,
+            values.SecondsEnded
+          )
+        )
+      ) * 1000;
+    await getProb
+      .post("http://localhost:3001/contest/createContest", {
+        probList: values.checked,
+        gradebyProblem: values.grade,
+        user1: values.checkedUser,
+        isPrivated: values.isPrivate,
+        title: values.Title,
+        Description: values.Description,
+        dateStarted: dateStarted,
+        dateEnded: dateEnded,
+      })
+      .then((res) => {
+        setSuccess(true);
+      });
   };
   useEffect(() => {
     const getAllProb = async () => {
@@ -79,7 +85,6 @@ function CreateContest() {
         .then((res) => {
           setUserAll(res.data);
         });
-      var time = format(new Date(), "yyyy-MM-dd''HH:mm:ss");
       setYearStarted(format(new Date(), "yyyy"));
       setYearEnded(format(new Date(), "yyyy"));
       setMonthEnded(format(new Date(), "MM"));
@@ -294,7 +299,7 @@ function CreateContest() {
                                     <p>{`Problem  ${index + 1} : `}</p>
                                     <Field
                                       name={`grade.${index}`}
-                                      type="text"
+                                      type="number"
                                       value={probValue.id}
                                       className="text-sm  focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                     />
@@ -340,7 +345,9 @@ function CreateContest() {
                 </div>
                 <div className="grid gap-y-4  grid-cols-3 lg:grid-cols-6 lg:justify-items-end">
                   <div>
-                    <p className="text-sm lg:text-lg font-bold ">Year Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Year Started
+                    </p>
 
                     <Field
                       type="number"
@@ -349,7 +356,9 @@ function CreateContest() {
                     ></Field>
                   </div>
                   <div>
-                    <p className="text-sm lg:text-lg font-bold ">Month Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Month Started
+                    </p>
                     <Field
                       type="number"
                       name="MonthStarted"
@@ -368,7 +377,9 @@ function CreateContest() {
 
                   <div>
                     {" "}
-                    <p className="text-sm lg:text-lg font-bold ">Hour Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Hour Started
+                    </p>
                     <Field
                       type="number"
                       name="HourStarted"
@@ -377,7 +388,9 @@ function CreateContest() {
                   </div>
                   <div>
                     {" "}
-                    <p className="text-sm lg:text-lg font-bold ">Minutes Started</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Minutes Started
+                    </p>
                     <Field
                       type="number"
                       name="MinutesStarted"
@@ -386,7 +399,9 @@ function CreateContest() {
                   </div>
                   <div>
                     {" "}
-                    <p className="text-sm lg:text-lg font-bold">Seconds Started</p>
+                    <p className="text-sm lg:text-lg font-bold">
+                      Seconds Started
+                    </p>
                     <Field
                       type="number"
                       name="SecondsStarted"
@@ -396,8 +411,7 @@ function CreateContest() {
                 </div>
                 <div className="grid gap-y-4  grid-cols-3  lg:grid-cols-6 lg:justify-items-end">
                   <div>
-                    <p
-                    className="text-sm lg:text-lg font-bold ">Year Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">Year Ended</p>
 
                     <Field
                       type="number"
@@ -411,7 +425,6 @@ function CreateContest() {
                       type="number"
                       name="MonthEnded"
                       className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                    
                     ></Field>
                   </div>
                   <div>
@@ -421,8 +434,7 @@ function CreateContest() {
                       type="number"
                       name="DayEnded"
                       className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                   
-                   ></Field>
+                    ></Field>
                   </div>
 
                   <div>
@@ -432,22 +444,24 @@ function CreateContest() {
                       type="number"
                       name="HourEnded"
                       className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                    
                     ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p className="text-sm lg:text-lg font-bold ">Minutes Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Minutes Ended
+                    </p>
                     <Field
                       type="number"
                       name="MinutesEnded"
                       className="focus:ring-gray-700 w-20 lg:w-40 focus:border-gray-400 text-gray-base  mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
-                   
-                   ></Field>
+                    ></Field>
                   </div>
                   <div>
                     {" "}
-                    <p className="text-sm lg:text-lg font-bold ">Seconds Ended</p>
+                    <p className="text-sm lg:text-lg font-bold ">
+                      Seconds Ended
+                    </p>
                     <Field
                       type="number"
                       name="SecondsEnded"

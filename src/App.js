@@ -5,7 +5,9 @@ import axios from "axios";
 import Search from "./pages/Search";
 import CreateProb from "./pages/CreateProb";
 import CreateContest from "./pages/CreateContest";
-
+import Contest from "./pages/Contest";
+import ContestProblem from "./pages/ContestProblem";
+import SubmitContest from "./pages/SubmitContest";
 const App = () => {
   const [user, setUser] = useState(null);
   const [isuserAdmin, setUserAdmin] = useState(null);
@@ -86,6 +88,29 @@ const App = () => {
                 }
               />
               <Route
+                path="/Contest"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        <Contest />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+              <Route
                 path="/prob/:id"
                 element={
                   isAuth !== null ? (
@@ -93,6 +118,52 @@ const App = () => {
                       {" "}
                       {isAuth === true ? (
                         <Prob />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+              <Route
+                path="/Contest/:id"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        <ContestProblem />
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+                    <Route
+                path="/SubmitContest/:probId/:contestId"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        <SubmitContest />
                       ) : (
                         <Navigate to="/login" />
                       )}{" "}
