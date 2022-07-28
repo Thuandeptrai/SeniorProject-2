@@ -25,12 +25,7 @@ function CreateContest() {
   });
 
   const handleSubmit = async (values) => {
-    let probList = [];
-    let user = [];
-    let title = [];
-    let Description = [];
-    let isPrivated = [];
-    let gradebyProblem = [];
+ 
 
     var dateStarted = parseInt(
       getUnixTime(
