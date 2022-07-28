@@ -25,8 +25,6 @@ function CreateContest() {
   });
 
   const handleSubmit = async (values) => {
- 
-
     var dateStarted = parseInt(
       getUnixTime(
         new Date(
@@ -53,20 +51,28 @@ function CreateContest() {
           )
         )
       ) * 1000;
-    await getProb
-      .post("http://localhost:3001/contest/createContest", {
-        probList: values.checked,
-        gradebyProblem: values.grade,
-        user1: values.checkedUser,
-        isPrivated: values.isPrivate,
-        title: values.Title,
-        Description: values.Description,
-        dateStarted: dateStarted,
-        dateEnded: dateEnded,
-      })
-      .then((res) => {
-        setSuccess(true);
-      });
+    let grade = 0;
+    for (let i = 0; i < values.grade.length; i++) {
+      grade = grade + values.grade[i];
+    }
+    if (grade === 100) {
+      await getProb
+        .post("http://localhost:3001/contest/createContest", {
+          probList: values.checked,
+          gradebyProblem: values.grade,
+          user1: values.checkedUser,
+          isPrivated: values.isPrivate,
+          title: values.Title,
+          Description: values.Description,
+          dateStarted: dateStarted,
+          dateEnded: dateEnded,
+        })
+        .then((res) => {
+          setSuccess(true);
+        });
+    } else {
+      setSuccess(false);
+    }
   };
   useEffect(() => {
     const getAllProb = async () => {
@@ -282,7 +288,9 @@ function CreateContest() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
-                        <p className="font-bold">Grade by problem (the total grade must equal 100)</p>
+                        <p className="font-bold">
+                          Grade by problem (the total grade must equal 100)
+                        </p>
                         {values.checked !== null &&
                           values.checked.length !== 0 &&
                           values.checked.map((probValue, index) => (
@@ -491,7 +499,7 @@ function CreateContest() {
             }  border rounded`}
           >
             <strong className="text-sm font-medium">
-              {success === true ? "Success" : "Something went wrong"}
+              {success === true ? "Success" : "The grade must equal 100"}
             </strong>
           </div>
         ) : null}
