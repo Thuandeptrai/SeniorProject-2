@@ -1,5 +1,5 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import React, { Component, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { userContext } from "../context/userContext";
 const Navbar = () => {
   const history = useNavigate();

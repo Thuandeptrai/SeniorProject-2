@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
-import { userContext } from "../context/userContext";
 import axios from "axios";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userContext } from "../context/userContext";
 
 function Contest() {
   const getContest = axios.create({
