@@ -143,7 +143,7 @@ function Home() {
                   {prob &&
                     prob.map((data, index) => (
                       <>
-                        {user.problemSolved.includes(data.id) ? (
+                        {data.ans.includes(user.id) ? (
                           <>
                             <tr
                               className="h-16 border bg-green-500 border-gray-100  rounded "
