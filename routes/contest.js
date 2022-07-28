@@ -56,15 +56,18 @@ router.post("/createContest", verifyUserIsAdmin, async (req, res) => {
         newContest,
       });
     })
-    .catch(() => {
+    .catch((err) => {
+      console.log(err);
       res.status(500).json("Error");
     });
 });
 
 router.get("/getAll", async (req, res) => {
   const Time = Date.now();
+  const getUserId = req.user.id;
   try {
     const getAllContest = await Contest.find({ isPrivated: false });
+
     let allContest = [];
     for (let i = 0; i < getAllContest.length; i++) {
       if (parseInt(Time) < parseInt(getAllContest[i].dateEnded)) {
@@ -73,14 +76,28 @@ router.get("/getAll", async (req, res) => {
           parseInt(Time) === parseInt(getAllContest[i].dateStarted) ||
           parseInt(Time) > parseInt(getAllContest[i].dateStarted)
         ) {
-          a = {
-            title: getAllContest[i].title,
-            desc: getAllContest[i].Description,
-            status: "On Going",
-          };
+          if (getAllContest[i].user.includes(getUserId)) {
+            a = {
+              title: getAllContest[i].title,
+              desc: getAllContest[i].Description,
+              id: getAllContest[i].id,
+              status: "On Going",
+              IsJoined: true,
+            };
+          } else {
+            a = {
+              title: getAllContest[i].title,
+              desc: getAllContest[i].Description,
+              id: getAllContest[i].id,
+              status: "On Going",
+              IsJoined: false,
+            };
+          }
         } else {
           a = {
             title: getAllContest[i].title,
+            id: getAllContest[i].id,
+
             desc: getAllContest[i].Description,
             status: "Not Start",
           };
@@ -101,6 +118,10 @@ router.get("/singleContest/:id", async (req, res) => {
   try {
     const getUser = await User.find({ id: req.user.id });
     const getContest = await Contest.find({ id: contestParams.id });
+    const getContestTicket = await contestTicket.find({
+      userId: req.user.id,
+      contestId: contestParams.id,
+    });
     if (
       parseInt(Time) > parseInt(getContest[0].dateStarted) &&
       parseInt(Time) < parseInt(getContest[0].dateEnded)
@@ -109,7 +130,27 @@ router.get("/singleContest/:id", async (req, res) => {
         getContest[0].user.includes(getUser[0].id) ||
         getUser[0].isAdmin === true
       ) {
-        res.status(200).json(getContest);
+        var ProbDetail = [];
+        var checkGrade = [];
+        for (let i = 0; i < getContest[0].probList.length; i++) {
+          const getProb = await Prob.findOne({ id: getContest[0].probList[i] });
+          const { realInput, realOutput, ...others } = getProb._doc;
+          if (
+            parseInt(getProb.realOutput.length) ===
+            parseInt(getContestTicket[0].problemList[i])
+          ) {
+            checkGrade.push(i);
+          }
+          ProbDetail.push({ others });
+        }
+        res
+          .status(200)
+          .json({
+            getContest,
+            probDetail: ProbDetail,
+            grade: getContestTicket[0],
+            passed: checkGrade,
+          });
       } else {
         res.status(200).json("You are not allowed");
       }
@@ -117,6 +158,7 @@ router.get("/singleContest/:id", async (req, res) => {
       res.status(200).json("The Contest does not start");
     }
   } catch (err) {
+    console.log(err);
     res.status(500).json("Something Wrong");
   }
 });
@@ -311,9 +353,11 @@ router.get("/joinContest/:id", async (req, res) => {
   contestId = req.params.id;
   user = req.user.id;
   const Time = Date.now();
+
   try {
     const getContest = await Contest.find({ id: contestId });
-    if (praseInt(getContest[0].dateEnded) < praseInt(Time)) {
+
+    if (parseInt(getContest[0].dateEnded) > Time) {
       if (getContest[0].isPrivated !== true) {
         if (getContest[0].length !== 0) {
           if (getContest[0].user.includes(user)) {
@@ -378,8 +422,7 @@ router.get("/contestTicket", async (req, res) => {
           conTestticket: getContestTicket[i],
           status: "On going",
         });
-      }else
-      {
+      } else {
         userContestArr.push({
           conTestticket: getContestTicket[i],
           status: "The contest do not started",
@@ -392,33 +435,102 @@ router.get("/contestTicket", async (req, res) => {
     res.status(500).json("Something went wrong");
   }
 });
-router.get("/problem/:probId/:contestId", async (req,res) =>
-{
-  const probId = req.params.probId
-  const contestId = req.params.contestId
-  const Time = Date.now()
-  try{
-    const getContest = await Contest.findOne({id: contestId})
-    if(getContest.dateStarted <= Time && Time < getContest.dateEnded )
-    {
-      const getProb = await Prob.findOne({id: probId})
-      if(getProb)
-      {
-        const { realInput, realOutput, ...others } = getProb._doc
-        res.status(200).json(others)
-      }else
-      {
-        res.status(200).json("Not Found")
-      }
-    }else
-    {
-      res.status.json("The contest do not start")
-    }
-  }catch(err)
-  {
-    res.status(500).json("Something went wrong")
-  }
-})
 
+router.get("/problem/:probId/:contestId", async (req, res) => {
+  const probId = req.params.probId;
+  const contestId = req.params.contestId;
+  const Time = Date.now();
+  try {
+    const getContest = await Contest.findOne({ id: contestId });
+    if (getContest.dateStarted <= Time && Time < getContest.dateEnded) {
+      const getProb = await Prob.findOne({ id: probId });
+      if (getProb) {
+        const { realInput, realOutput, ...others } = getProb._doc;
+        res.status(200).json(others);
+      } else {
+        res.status(200).json("Not Found");
+      }
+    } else {
+      res.status(200).json("The contest do not start");
+    }
+  } catch (err) {
+    res.status(500).json("Something went wrong");
+  }
+});
+router.get("/getAllProblem", verifyUserIsAdmin, async (req, res) => {
+  const getUser = req.user.id;
+  try {
+    const getAllProb = await Prob.find({
+      isPrivate: true,
+      userCreated: getUser,
+    });
+    res.status(200).json(getAllProb);
+  } catch (err) {
+    res.status(500).json("Something went wrong");
+  }
+});
+router.get("/getAllUser", verifyUserIsAdmin, async (req, res) => {
+  try {
+    const getAllUser = await User.find({});
+    res.status(200).json(getAllUser);
+  } catch (err) {
+    res.status(500).json("Something went wrong");
+  }
+});
+
+router.post("/testCompiler/:probId/:contestId", async (req, res) => {
+  code = req.body.code;
+  lang = req.body.lang;
+  const probId = req.params.probId;
+  const contestId = req.params.contestId;
+  const Time = Date.now();
+  try {
+    const getContest = await Contest.findOne({ id: contestId });
+    if (getContest.dateStarted <= Time && Time < getContest.dateEnded) {
+      const problem = await Prob.findOne({ id: probId });
+      const myArry = problem.testInput;
+      const ans = problem.testOutput;
+      let correct = 0;
+
+      for (let i = 0; i < myArry.length; i++) {
+        let stdin = myArry[i];
+        await axios
+          .post(
+            "https://www.jdoodle.com/engine/execute",
+            {
+              script: code,
+              args: null,
+              stdin: stdin,
+              language: lang,
+              libs: [],
+              versionIndex: 1,
+              projectKey: 1001,
+              hasInputFiles: false,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then(async (data) => {
+            if (data.data.output === ans[i]) {
+              correct++;
+            }
+          });
+      }
+      if (correct == myArry.length) {
+        res.status(200).json("Passed");
+      } else {
+        
+          res.status(200).json("You are not passed");
+      }
+    } else {
+      res.status(200).json("The contest do not open ");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = router;

@@ -8,7 +8,7 @@ router.post("/",async (req,res) =>
     const descript = req.body.desc;
     const userCreated = req.user.id;
     const testInput = req.body.testInput;
-    const testOutput = req.body.testOutPut;
+    const testOutput = req.body.testOutput;
     const realInput = req.body.realInput;
     const title = req.body.title;
     const isPrivate = req.body.isPrivate
@@ -24,7 +24,9 @@ router.post("/",async (req,res) =>
       realInput,
       realOutput,
     });
-    await newProb
+    try{
+
+      await newProb
       .save()
       .then(() => {
         res.status(200).json({
@@ -34,5 +36,9 @@ router.post("/",async (req,res) =>
       .catch(() => {
         res.status(500).json("Error");
       });
+    }catch(err)
+    {
+      res.status(500).json("Error")
+    }
 })
 module.exports = router;
