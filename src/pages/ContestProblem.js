@@ -6,6 +6,7 @@ function ContestProblem() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [hour, setHour] = useState(0);
+  const [activate, setActivate] = useState(0)
   useEffect(() => {
     let myInterval = setInterval(() => {
       if (seconds > 0) {
@@ -22,6 +23,10 @@ function ContestProblem() {
           setSeconds(59);
         }
         if (minutes === 0 && hour === 0) {
+          if(activate !== 0)
+          {
+            history("/")
+          }
           clearInterval(myInterval);
         }
       }
@@ -66,10 +71,10 @@ function ContestProblem() {
               parseInt(Test.days * 24) +
               parseInt(Test.months * 30 * 24)
           );
+          setActivate(activate +1)
           setSeconds(Test.seconds);
           setMinutes(Test.minutes);
 
-          console.log("dateoutpu2t:", Test);
         });
     };
     handleGetSingleContest();

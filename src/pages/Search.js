@@ -94,23 +94,7 @@ function Search() {
             </div>
             <div className="bg-white py-4 md:py-4 px-4 md:px-8 xl:px-10">
             <div className="sm:flex items-center justify-between ">
-              <div className="flex items-center mb-5">
-                <a href="/">
-                  <div className="py-2 px-8 bg-indigo-100 text-indigo-700 rounded-full">
-                    <p>All</p>
-                  </div>
-                </a>
-                <a href="/">
-                  <div className="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ml-4 sm:ml-8">
-                    <p>Done</p>
-                  </div>
-                </a>
-                <a href="/">
-                  <div className="py-2 px-8 text-gray-600 hover:text-indigo-700 hover:bg-indigo-100 rounded-full ml-4 sm:ml-8">
-                    <p>Pending</p>
-                  </div>
-                </a>
-              </div>
+             
               <div className=" flex justify-start  items-center  relative">
                 <input
                   className="text-sm leading-none  text-left text-gray-600 px-4 py-3 w-full border rounded border-gray-300  outline-none"

@@ -55,7 +55,8 @@ function Home() {
         await getProblem
           .get(`http://localhost:3001/problem/${mode}/0/${number}`)
           .then((prob) => {
-            setProb(prob.data.getProb);
+          setHide(false);
+          setProb(prob.data.getProb);
           });
       } else {
         await getProblem
@@ -63,9 +64,10 @@ function Home() {
           .then((prob) => {
             setProb(prob.data);
           });
+          setHide(true);
       }
     };
-    setHide(false);
+   
 
     getProb();
   }, [mode, userFinished]);

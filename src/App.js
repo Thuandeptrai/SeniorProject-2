@@ -8,6 +8,8 @@ import CreateContest from "./pages/CreateContest";
 import Contest from "./pages/Contest";
 import ContestProblem from "./pages/ContestProblem";
 import SubmitContest from "./pages/SubmitContest";
+import UserProfile from "./pages/UserProfile";
+import WrongPage from "./pages/404";
 const App = () => {
   const [user, setUser] = useState(null);
   const [isuserAdmin, setUserAdmin] = useState(null);
@@ -156,7 +158,7 @@ const App = () => {
                   )
                 }
               />
-                    <Route
+              <Route
                 path="/SubmitContest/:probId/:contestId"
                 element={
                   isAuth !== null ? (
@@ -207,6 +209,33 @@ const App = () => {
                 }
               />
               <Route
+                path="/UserProfile"
+                element={
+                  isAuth !== null ? (
+                    <>
+                      {" "}
+                      {isAuth === true ? (
+                        isuserAdmin ? (
+                          <UserProfile />
+                        ) : (
+                          <Navigate to="/login" />
+                        )
+                      ) : (
+                        <Navigate to="/login" />
+                      )}{" "}
+                    </>
+                  ) : (
+                    <>
+                      {isAuth === false ? (
+                        <Navigate to="/login" />
+                      ) : (
+                        <Loading />
+                      )}
+                    </>
+                  )
+                }
+              />
+              <Route
                 path="/createContest"
                 element={
                   isAuth !== null ? (
@@ -233,6 +262,7 @@ const App = () => {
                   )
                 }
               />
+              <Route path="*" element={<WrongPage />} />
             </Routes>
           </Suspense>
         </userContext.Provider>
