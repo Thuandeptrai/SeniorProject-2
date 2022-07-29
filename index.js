@@ -16,6 +16,7 @@ const userRouter = require("./routes/user");
 const problem = require("./routes/problem");
 const User = require("./module/user");
 const contestRouter = require("./routes/contest");
+const commentRouter = require("./routes/comment");
 const { v4: uuidv4 } = require("uuid");
 const {
   verifyTokenAndAuthorization,
@@ -72,6 +73,8 @@ app.use("/submit", verifyTokenAndAuthorization, submitRouter);
 app.use("/user", verifyTokenAndAuthorization, userRouter);
 
 app.use("/contest", verifyTokenAndAuthorization, contestRouter);
+
+app.use("/comment", verifyTokenAndAuthorization, commentRouter);
 
 app.get("/testRoute", async (req, res) => {
   const getProb = await Prob.find({}).sort({ createdAt: 1 });
