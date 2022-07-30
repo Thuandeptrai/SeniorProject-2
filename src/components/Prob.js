@@ -7,6 +7,7 @@ import Reaptcha from "reaptcha";
 import Editor from "@monaco-editor/react";
 import { defineTheme } from "../lib/defineTheme";
 import ThemeDropdown from "./themeDropDown";
+import Comment from "./Comment"
 
 function Prob() {
   const [code, setCode] = React.useState("");
@@ -353,11 +354,17 @@ function Prob() {
                     >
                       {processing ? "Loading" : "Submit"}
                     </button>
+                 
+
                   </div>
+                  
                 </div>
+                <Comment commentId={id} />
               </div>
             </div>
+         
           </div>
+            
         </>
       ) : (
         <div>Loading</div>
