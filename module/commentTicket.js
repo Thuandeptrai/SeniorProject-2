@@ -11,6 +11,15 @@ const commentTicketdb = new mongoose.Schema(
     like:{
         type:Number,
         default:0
+    },
+    wholiked:
+    {
+      type:Array,
+      default:[]
+    },
+    whodisliked:{
+      type:Array,
+      default:[]
     }
   },
   {
