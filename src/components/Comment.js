@@ -87,7 +87,15 @@ function Comment({ commentId }) {
                       <strong
                         onClick={(e) => {
                           e.preventDefault();
-                          sethandleShowReply(true);
+                          if(handleShowReply === true)
+                          {
+                            sethandleShowReply(false);
+                          }else
+                          {
+                            sethandleShowReply(true);
+                        
+                          }
+                          
                           setStateReply(index);
                         }}
                         className="cursor-pointer"
@@ -165,22 +173,7 @@ function Comment({ commentId }) {
             </>
           ) : null}
 
-          <div className="flex">
-            <div className="flex-shrink-0 mr-3"></div>
-            <div className="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-              <strong>Sarah</strong>{" "}
-              <span className="text-xs text-gray-400">3:34 PM</span>
-              <p className="text-sm">
-                Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                aliquyam erat, sed diam voluptua.
-              </p>
-              <h4 className="my-5 uppercase tracking-wide text-gray-400 font-bold text-xs">
-                Replies
-              </h4>
-              {/*This is Reply */}
-            </div>
-          </div>
+       
         </div>
       </div>
     </>
