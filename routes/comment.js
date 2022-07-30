@@ -21,6 +21,7 @@ router.post("/createComment", async (req, res) => {
           {
             id,
             userId: req.user.id,
+            
             comment,
             Time,
             reply: [],
@@ -60,6 +61,7 @@ router.post("/commentReply", async (req, res) => {
   const id = uuidv4();
   const Time = Date.now();
   try {
+    const findUser = await User.findOne({id:req.user.id})
     const findComment = await commentTicket.findOne({
       _id: commentId,
     });
@@ -74,22 +76,34 @@ router.post("/commentReply", async (req, res) => {
     if (flag === 123456789) {
       res.status(200).json("Not Found");
     } else {
-      console.log(findComment.comment[flag]);
-      await commentReply[flag].reply.splice(0, 0, {
-        id,
-        userId: req.user.id,
-        comment,
-        Time,
-      });
+      console.log(findComment.comment[flag].reply.length);
+      if (commentReply[flag].reply.length === 0) {
+        await commentReply[flag].reply.push({
+          id,
+          userId: req.user.id,
+          userName:findUser.name,
+          comment,
+          Time,
+        });
+      } else {
+        await commentReply[flag].reply.splice(0, 0, {
+          id,
+          userName:findUser.name,
 
+          userId: req.user.id,
+          comment,
+          Time,
+        });
+      }
+      console.log(commentReply[flag])
       const Update = await commentTicket.findOneAndUpdate(
         {
-          commentId,
+          _id: commentId,
         },
         { $set: { comment: commentReply } }
       );
 
-      const getComment = await commentTicket.find({ commentId });
+      const getComment = await commentTicket.findOne({ _id: commentId });
       res.status(200).json(getComment);
     }
   } catch (err) {
