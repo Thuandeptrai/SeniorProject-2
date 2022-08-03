@@ -52,8 +52,10 @@ router.post("/", async (req,res) =>
             }
           )
           .then(async (data) => {
-            if (data.data.output === ans[i]) {
-              correct++;
+            if (data.data.output !== null) {
+              if (data.data.output.replace(/(\r\n|\n|\r)/gm, "") === ans[i]) {
+                correct++;
+              }
             }
           });
       }
