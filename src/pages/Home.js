@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
-import { userContext } from "../context/userContext";
 import axios from "axios";
+import React, { useContext, useEffect, useState } from "react";
 import Moment from "react-moment";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { userContext } from "../context/userContext";
 
 function Home() {
   const history = useNavigate();
@@ -13,6 +13,8 @@ function Home() {
   const [mode, setMode] = useState("desc");
   const [hide, setHide] = useState(false);
   const [userFinished, setUserFinished] = useState(false);
+
+
   const getProblem = axios.create({
     withCredentials: true,
   });
@@ -71,7 +73,7 @@ function Home() {
 
     getProb();
   }, [mode, userFinished]);
-  console.log(userFinished)
+  
   return (
     <>
       <div>
@@ -106,7 +108,7 @@ function Home() {
             <div className="sm:flex items-center justify-between ">
               <div className="flex items-center mb-5">
                 <label
-                  for="default-toggle"
+                  htmlFor="default-toggle"
                   className="inline-flex relative items-center cursor-pointer"
                 >
                   <input
@@ -149,7 +151,7 @@ function Home() {
                           <>
                             <tr
                               className="h-16 border bg-green-500 border-gray-100  rounded "
-                              key={index}
+                              key={data.id}
                             >
                               <td>
                                 <div className="flex bg-green-500 items-center pl-5">
@@ -171,7 +173,7 @@ function Home() {
                                 <div className="flex gap-0 justify-center">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-users"
+                                    className="icon icon-tabler icon-tabler-users"
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
@@ -209,7 +211,7 @@ function Home() {
                           </>
                         ) : (
                           <>
-                            <tr className="h-16 border border-gray-100  rounded ">
+                            <tr key={data.id} className="h-16 border border-gray-100  rounded ">
                               <td>
                                 <div className="flex items-center pl-5">
                                   <p className="text-base font-medium leading-none text-gray-700 mr-2">
@@ -230,7 +232,7 @@ function Home() {
                                 <div className="flex gap-0 justify-center">
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    class="icon icon-tabler icon-tabler-users"
+                                    className="icon icon-tabler icon-tabler-users"
                                     width="24"
                                     height="24"
                                     viewBox="0 0 24 24"
@@ -279,7 +281,7 @@ function Home() {
             <div className="grid grid-cols-3 lg:grid-cols-5 gap-4 mb-10">
               <button
                 type="submit"
-                class="col-start-2 col-span-1 lg:col-start-3  inline-block px-5 py-3 ml-3 text-sm font-medium text-white bg-blue-500 rounded-lg"
+                className="col-start-2 col-span-1 lg:col-start-3  inline-block px-5 py-3 ml-3 text-sm font-medium text-white bg-blue-500 rounded-lg"
                 onClick={(e) => {
                   handleShowMore(e);
                 }}

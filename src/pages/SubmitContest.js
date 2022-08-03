@@ -99,10 +99,15 @@ function SubmitContest() {
     setwrongAns(null);
     setProcessing(true);
     await transport
-      .post(`http://localhost:3001/contest/testCompiler/${probId}/${contestId}`, {
-        code,
-        lang: langsubmit,
-      })
+      .post(
+        `http://localhost:3001/contest/testCompiler/${probId}/${contestId}`,
+        {
+          captcha: capchaRes,
+
+          code,
+          lang: langsubmit,
+        }
+      )
       .then((res) => {
         if (res.data === "Passed") {
           setwrongAns(false);
@@ -333,17 +338,19 @@ function SubmitContest() {
                   <div>
                     <button
                       className={`transition duration-150 mt-5 mx-8 ease-in-out ${
-                        token !== false ? `opacity-50 cursor-not-allowed` : null
+                        token !== true ? `opacity-50 cursor-not-allowed` : null
                       } focus:outline-none border bg-indigo-700 rounded text-white px-8 py-2 text-sm`}
                       onClick={onButtonClick}
+                      disabled={!token}
                     >
                       {processing ? "Loading" : "Test"}
                     </button>
                     <button
                       className={`transition duration-150 ease-in-out ${
-                        token !== false ? `opacity-50 cursor-not-allowed` : null
+                        token !== true ? `opacity-50 cursor-not-allowed` : null
                       }   focus:outline-none border bg-sky-700 rounded text-white px-8 py-2 text-sm`}
                       onClick={onClickSubmit}
+                      disabled={!token}
                     >
                       {processing ? "Loading" : "Submit"}
                     </button>
