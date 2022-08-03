@@ -58,7 +58,6 @@ function ContestProblem() {
           const result = fromUnixTime(
             parseInt(res.data.getContest[0].dateEnded) / 1000
           );
-          const dateoutput = format(result, "yyyy-MM-dd");
           const Time = Date.now();
           const Test = intervalToDuration({
             start: Time,
@@ -80,7 +79,6 @@ function ContestProblem() {
     };
     handleGetSingleContest();
   }, []);
-  console.log(hour);
   return (
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
