@@ -2,6 +2,7 @@ import axios from "axios";
 import { format, getUnixTime } from "date-fns";
 import { Field, FieldArray, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
+import ReactQuill from "react-quill";
 import { CreateContestSchema } from "../validate/validation";
 function CreateContest() {
   const [success, setSuccess] = useState(null);
@@ -109,10 +110,15 @@ function CreateContest() {
     field, // { name, value, onChange, onBlur }
     form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
     ...props
-  }) => (
+  }) => (<>
     <div>
-      <textarea className="" type="text" {...field} {...props} />
+      <ReactQuill theme="snow" className="h-80 mb-10"  value={field.value} d  onChange={field.onChange(field.name)}/>
+      
+     
     </div>
+    { console.log(field.value.replace(/<[^>]*>?/gm, ''))}
+    
+  </>
   );
   return (
     <>
