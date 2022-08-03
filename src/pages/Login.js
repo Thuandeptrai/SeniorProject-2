@@ -1,11 +1,8 @@
-import React, { Component, useContext, useState } from "react";
-import { userContext } from "../context/userContext";
+import React from "react";
 const Login = () => {
   const google = () => {
     window.open("http://localhost:3001/auth/google", "_self");
   };
-  const user = useContext(userContext);
-  const [sidebar, setsidebar] = useState();
   return (
     <div className="h-full bg-gradient-to-tl  to-indigo-900 w-full py-16 px-4">
       <div className="flex flex-col items-center justify-center">
