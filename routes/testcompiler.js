@@ -13,7 +13,7 @@ router.post("/", async (req,res) =>
     try {
       await axios
         .get(
-          `https://www.google.com/recaptcha/api/siteverify?secret=6LemUxAUAAAAAPlLsbu-XqI6vEnRDWlDwAtSyKl8&response=${captcha}`
+          `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA}&response=${captcha}`
         )
         .then((resdata) => {
           if (!resdata.data.success) {

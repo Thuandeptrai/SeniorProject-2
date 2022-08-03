@@ -172,6 +172,8 @@ router.post("/submit/:probId/:id", async (req, res) => {
   const Time = Date.now();
   const code = req.body.code;
   const lang = req.body.lang;
+  const captcha = req.body.captcha;
+
   const userId = req.user.id;
   const problem = await Prob.findOne({ id: probId });
   const getContest = await Contest.find({ id: contestParams });
@@ -183,171 +185,191 @@ router.post("/submit/:probId/:id", async (req, res) => {
   const ans = problem.realOutput;
   var correct = 0;
   try {
-    if (
-      parseInt(Time) > parseInt(getContest[0].dateStarted) &&
-      parseInt(Time) < parseInt(getContest[0].dateEnded)
-    ) {
-      for (let i = 0; i < myArry.length; i++) {
-        let stdin = myArry[i];
-        await axios
-          .post(
-            "https://www.jdoodle.com/engine/execute",
-            {
-              script: code,
-              args: null,
-              stdin: stdin,
-              language: lang,
-              libs: [],
-              versionIndex: 1,
-              projectKey: 1001,
-              hasInputFiles: false,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          )
-          .then(async (data) => {
-            if (data.data.output !== null) {
-              if (data.data.output.replace(/(\r\n|\n|\r)/gm, "") === ans[i]) {
-                correct++;
-              }
-            }
-          });
-      }
-      if (correct === ans.length) {
-        const getUser = await User.findOne({ id: userId });
-        var updateProblist = [];
-        for (let i = 0; i < getTicket[0].problemList.length; i++) {
-          updateProblist.push(getTicket[0].problemList[i]);
-        }
-        var getIndex = getContest[0].probList.indexOf(probId);
-        updateProblist[getIndex] = correct.toString();
-        var getScore = getContest[0].gradebyProblem[getIndex];
-        var Subtract = 0;
-        var getScoreFinal = 0;
-        let PointPerTest = getScore / problem.realOutput.length;
-
-        if (
-          getTicket[0].problemList[getIndex].length === 0 ||
-          parseInt(getTicket[0].problemList[getIndex]) <
-            parseInt(problem.realOutput.length)
-        ) {
-          if (parseInt(getTicket[0].problemList[getIndex].length) !== 0) {
-            Subtract =
-              getTicket[0].grade -
-              parseInt(getTicket[0].problemList[getIndex]) * PointPerTest;
-            console.log(Subtract);
-            getScoreFinal = Subtract + getScore;
-          } else {
-            getScoreFinal = getTicket[0].grade + correct * PointPerTest;
-          }
-          let update2 = await contestTicket.findOneAndUpdate(
-            { userId: userId, contestId: contestParams },
-            { $set: { grade: parseInt(getScoreFinal) } }
-          );
-        }
-        let update1 = await contestTicket.findOneAndUpdate(
-          { userId: userId, contestId: contestParams },
-          { $set: { problemList: updateProblist } },
-          { new: true }
-        );
-
-        let update33 = await contestTicket.findOne({
-          userId: userId,
-          contestId: contestParams,
-        });
-
-        let solved = problem.ans;
-        let getwrongAns = problem.wrongAns;
-        let userSolved = getUser.problemSolved;
-        let getUnSolved = getUser.problemWrong;
-        if (getUnSolved.length !== 0 || getUnSolved !== null) {
-          getUnSolved = getUnSolved.filter(
-            (item) => !probId.includes(item.Problem)
-          );
-        }
-        if (getwrongAns.length !== 0 || getwrongAns !== null) {
-          getwrongAns = getwrongAns.filter((item) => !userId.includes(item.id));
-        }
-
-        if (userSolved === null || userSolved.length === 0) {
-          userSolved = [];
-          userSolved.push(probId);
-        } else if (!userSolved.includes(probId)) {
-          userSolved.push(probId);
-        }
-
-        if (!solved.includes(getUser.id)) {
-          solved.push(getUser.id);
-        }
-        let update = await Prob.findOneAndUpdate(
-          { id: probId },
-          { $set: { ans: solved } },
-          { new: true }
-        );
-        if (getwrongAns.length === 0) {
-          let updateUser = await Prob.findOneAndUpdate(
-            { id: probId },
-            { $set: { wrongAns: getwrongAns } },
-            { new: true }
-          );
-        }
-        res.status(200).json(`Passed`);
-      } else {
-        const userId = req.user.id;
-        let indexOfProb = getContest[0].probList.indexOf(probId);
-
-        const getUser = await User.findOne({ id: userId });
-        let userWasSolved = 0;
-        var updateProblist = [];
-        var getScore = getContest[0].gradebyProblem[indexOfProb];
-        var FinalScore = 0;
-        var PointPerTest = getScore / problem.realOutput.length;
-
-        for (let i = 0; i < getTicket[0].problemList.length; i++) {
-          updateProblist.push(getTicket[0].problemList[i]);
-        }
-        updateProblist[indexOfProb] = correct.toString();
-        if (
-          parseInt(getTicket[0].problemList[indexOfProb]) ===
-          problem.realOutput.length
-        ) {
-          userWasSolved++;
-        }
-        if (userWasSolved === 0) {
-          console.log(getTicket[0].problemList[indexOfProb]);
+    await axios
+      .get(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA}&response=${captcha}`
+      )
+      .then(async (resdata) => {
+        if (!resdata.data.success) {
+          res.status(404).json("Wrong captcha");
+        } else {
           if (
-            parseInt(correct) >
-              parseInt(getTicket[0].problemList[indexOfProb]) ||
-            getTicket[0].problemList[indexOfProb].length === 0
+            parseInt(Time) > parseInt(getContest[0].dateStarted) &&
+            parseInt(Time) < parseInt(getContest[0].dateEnded)
           ) {
-            if (parseInt(getTicket[0].problemList[indexOfProb].length) !== 0) {
-              var Subtract =
-                getTicket[0].grade -
-                parseInt(getTicket[0].problemList[indexOfProb]) * PointPerTest;
-              FinalScore = Subtract + correct * PointPerTest;
-            } else {
-              FinalScore = getTicket[0].grade + correct * PointPerTest;
+            for (let i = 0; i < myArry.length; i++) {
+              let stdin = myArry[i];
+              await axios
+                .post(
+                  "https://www.jdoodle.com/engine/execute",
+                  {
+                    script: code,
+                    args: null,
+                    stdin: stdin,
+                    language: lang,
+                    libs: [],
+                    versionIndex: 1,
+                    projectKey: 1001,
+                    hasInputFiles: false,
+                  },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                )
+                .then(async (data) => {
+                  if (data.data.output !== null) {
+                    if (
+                      data.data.output.replace(/(\r\n|\n|\r)/gm, "") === ans[i]
+                    ) {
+                      correct++;
+                    }
+                  }
+                });
             }
-            let update1 = await contestTicket.findOneAndUpdate(
-              { userId: userId, contestId: contestParams },
-              { $set: { problemList: updateProblist } },
-              { new: true }
-            );
-            let update2 = await contestTicket.findOneAndUpdate(
-              { userId: userId, contestId: contestParams },
-              { $set: { grade: parseInt(FinalScore) } }
-            );
+            if (correct === ans.length) {
+              const getUser = await User.findOne({ id: userId });
+              var updateProblist = [];
+              for (let i = 0; i < getTicket[0].problemList.length; i++) {
+                updateProblist.push(getTicket[0].problemList[i]);
+              }
+              var getIndex = getContest[0].probList.indexOf(probId);
+              updateProblist[getIndex] = correct.toString();
+              var getScore = getContest[0].gradebyProblem[getIndex];
+              var Subtract = 0;
+              var getScoreFinal = 0;
+              let PointPerTest = getScore / problem.realOutput.length;
+
+              if (
+                getTicket[0].problemList[getIndex].length === 0 ||
+                parseInt(getTicket[0].problemList[getIndex]) <
+                  parseInt(problem.realOutput.length)
+              ) {
+                if (parseInt(getTicket[0].problemList[getIndex].length) !== 0) {
+                  Subtract =
+                    getTicket[0].grade -
+                    parseInt(getTicket[0].problemList[getIndex]) * PointPerTest;
+                  console.log(Subtract);
+                  getScoreFinal = Subtract + getScore;
+                } else {
+                  getScoreFinal = getTicket[0].grade + correct * PointPerTest;
+                }
+                let update2 = await contestTicket.findOneAndUpdate(
+                  { userId: userId, contestId: contestParams },
+                  { $set: { grade: parseInt(getScoreFinal) } }
+                );
+              }
+              let update1 = await contestTicket.findOneAndUpdate(
+                { userId: userId, contestId: contestParams },
+                { $set: { problemList: updateProblist } },
+                { new: true }
+              );
+
+              let update33 = await contestTicket.findOne({
+                userId: userId,
+                contestId: contestParams,
+              });
+
+              let solved = problem.ans;
+              let getwrongAns = problem.wrongAns;
+              let userSolved = getUser.problemSolved;
+              let getUnSolved = getUser.problemWrong;
+              if (getUnSolved.length !== 0 || getUnSolved !== null) {
+                getUnSolved = getUnSolved.filter(
+                  (item) => !probId.includes(item.Problem)
+                );
+              }
+              if (getwrongAns.length !== 0 || getwrongAns !== null) {
+                getwrongAns = getwrongAns.filter(
+                  (item) => !userId.includes(item.id)
+                );
+              }
+
+              if (userSolved === null || userSolved.length === 0) {
+                userSolved = [];
+                userSolved.push(probId);
+              } else if (!userSolved.includes(probId)) {
+                userSolved.push(probId);
+              }
+
+              if (!solved.includes(getUser.id)) {
+                solved.push(getUser.id);
+              }
+              let update = await Prob.findOneAndUpdate(
+                { id: probId },
+                { $set: { ans: solved } },
+                { new: true }
+              );
+              if (getwrongAns.length === 0) {
+                let updateUser = await Prob.findOneAndUpdate(
+                  { id: probId },
+                  { $set: { wrongAns: getwrongAns } },
+                  { new: true }
+                );
+              }
+              res.status(200).json(`Passed`);
+            } else {
+              const userId = req.user.id;
+              let indexOfProb = getContest[0].probList.indexOf(probId);
+
+              const getUser = await User.findOne({ id: userId });
+              let userWasSolved = 0;
+              var updateProblist = [];
+              var getScore = getContest[0].gradebyProblem[indexOfProb];
+              var FinalScore = 0;
+              var PointPerTest = getScore / problem.realOutput.length;
+
+              for (let i = 0; i < getTicket[0].problemList.length; i++) {
+                updateProblist.push(getTicket[0].problemList[i]);
+              }
+              updateProblist[indexOfProb] = correct.toString();
+              if (
+                parseInt(getTicket[0].problemList[indexOfProb]) ===
+                problem.realOutput.length
+              ) {
+                userWasSolved++;
+              }
+              if (userWasSolved === 0) {
+                console.log(getTicket[0].problemList[indexOfProb]);
+                if (
+                  parseInt(correct) >
+                    parseInt(getTicket[0].problemList[indexOfProb]) ||
+                  getTicket[0].problemList[indexOfProb].length === 0
+                ) {
+                  if (
+                    parseInt(getTicket[0].problemList[indexOfProb].length) !== 0
+                  ) {
+                    var Subtract =
+                      getTicket[0].grade -
+                      parseInt(getTicket[0].problemList[indexOfProb]) *
+                        PointPerTest;
+                    FinalScore = Subtract + correct * PointPerTest;
+                  } else {
+                    FinalScore = getTicket[0].grade + correct * PointPerTest;
+                  }
+                  let update1 = await contestTicket.findOneAndUpdate(
+                    { userId: userId, contestId: contestParams },
+                    { $set: { problemList: updateProblist } },
+                    { new: true }
+                  );
+                  let update2 = await contestTicket.findOneAndUpdate(
+                    { userId: userId, contestId: contestParams },
+                    { $set: { grade: parseInt(FinalScore) } }
+                  );
+                }
+              }
+
+              res.status(200).json(`${correct}/${ans.length}`);
+            }
+          } else {
+            res.status(200).json("The contest do not open ");
           }
         }
-
-        res.status(200).json(`${correct}/${ans.length}`);
-      }
-    } else {
-      res.status(200).json("The contest do not open ");
-    }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
     res.status(404).json("Something Went Wrong");
@@ -483,56 +505,71 @@ router.get("/getAllUser", verifyUserIsAdmin, async (req, res) => {
 });
 
 router.post("/testCompiler/:probId/:contestId", async (req, res) => {
-  code = req.body.code;
-  lang = req.body.lang;
+  const code = req.body.code;
+  const lang = req.body.lang;
+  const captcha = req.body.captcha;
+
   const probId = req.params.probId;
   const contestId = req.params.contestId;
   const Time = Date.now();
   try {
-    const getContest = await Contest.findOne({ id: contestId });
-    if (getContest.dateStarted <= Time && Time < getContest.dateEnded) {
-      const problem = await Prob.findOne({ id: probId });
-      const myArry = problem.testInput;
-      const ans = problem.testOutput;
-      let correct = 0;
+    await axios
+      .get(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA}&response=${captcha}`
+      )
+      .then(async (resdata) => {
+        if (!resdata.data.success) {
+          res.status(404).json("Wrong captcha");
+        } else {
+          const getContest = await Contest.findOne({ id: contestId });
+          if (getContest.dateStarted <= Time && Time < getContest.dateEnded) {
+            const problem = await Prob.findOne({ id: probId });
+            const myArry = problem.testInput;
+            const ans = problem.testOutput;
+            let correct = 0;
 
-      for (let i = 0; i < myArry.length; i++) {
-        let stdin = myArry[i];
-        await axios
-          .post(
-            "https://www.jdoodle.com/engine/execute",
-            {
-              script: code,
-              args: null,
-              stdin: stdin,
-              language: lang,
-              libs: [],
-              versionIndex: 1,
-              projectKey: 1001,
-              hasInputFiles: false,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
+            for (let i = 0; i < myArry.length; i++) {
+              let stdin = myArry[i];
+              await axios
+                .post(
+                  "https://www.jdoodle.com/engine/execute",
+                  {
+                    script: code,
+                    args: null,
+                    stdin: stdin,
+                    language: lang,
+                    libs: [],
+                    versionIndex: 1,
+                    projectKey: 1001,
+                    hasInputFiles: false,
+                  },
+                  {
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                )
+                .then(async (data) => {
+                  console.log(data.data);
+                  if (data.data.output === ans[i]) {
+                    correct++;
+                  }
+                });
             }
-          )
-          .then(async (data) => {
-            if (data.data.output === ans[i]) {
-              correct++;
+            if (correct == myArry.length) {
+              res.status(200).json("Passed");
+            } else {
+              res.status(200).json("You are not passed");
             }
-          });
-      }
-      if (correct == myArry.length) {
-        res.status(200).json("Passed");
-      } else {
-        res.status(200).json("You are not passed");
-      }
-    } else {
-      res.status(200).json("The contest do not open ");
-    }
+          } else {
+            res.status(200).json("The contest do not open ");
+          }
+        }
+      })
+     
   } catch (err) {
-    console.log(err);
+    res.status(500).json("Something went wrong");
+
   }
 });
 

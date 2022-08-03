@@ -14,15 +14,15 @@ const submitRouter = require("./routes/submit");
 const singleproblem = require("./routes/singleproblem");
 const userRouter = require("./routes/user");
 const problem = require("./routes/problem");
-const User = require("./module/user");
 const contestRouter = require("./routes/contest");
 const commentRouter = require("./routes/comment");
-const { v4: uuidv4 } = require("uuid");
+const socketIo = require("socket.io");
 const {
   verifyTokenAndAuthorization,
   verifyUserIsAdmin,
 } = require("./verifyToken");
 const Prob = require("./module/problems");
+require('dotenv').config()
 app.use(
   cookieSession({
     name: "session",
@@ -30,10 +30,9 @@ app.use(
     maxAge: 24 * 60 * 60 * 100,
   })
 );
-
 mongoose
   .connect(
-    "mongodb+srv://thuan:rmk123456@cluster0.upcyp.mongodb.net/compiler?retryWrites=true&w=majority",
+    process.env.MONGODB,
     {
       useNewUrlParser: true,
 
@@ -76,10 +75,6 @@ app.use("/contest", verifyTokenAndAuthorization, contestRouter);
 
 app.use("/comment", verifyTokenAndAuthorization, commentRouter);
 
-app.get("/testRoute", async (req, res) => {
-  const getProb = await Prob.find({}).sort({ createdAt: 1 });
-  res.status(200).json(getProb);
-});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
