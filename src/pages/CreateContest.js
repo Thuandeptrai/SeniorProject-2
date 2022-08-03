@@ -105,7 +105,15 @@ function CreateContest() {
     };
     getAllProb();
   }, []);
-  console.log(yearStarted);
+  const CustomInputComponent = ({
+    field, // { name, value, onChange, onBlur }
+    form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+    ...props
+  }) => (
+    <div>
+      <textarea className="" type="text" {...field} {...props} />
+    </div>
+  );
   return (
     <>
       <div className="flex flex-col width-screen items-center bg-white px-5 py-9 border border-gray-primary mb-3 rounded">
@@ -168,9 +176,10 @@ function CreateContest() {
                 ) : null}
 
                 <Field
+                  component={CustomInputComponent}
                   name="Description"
                   placeholder="Description"
-                  className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                  className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-80 border border-gray-primary rounded mb-2"
                 />
                 {errors?.Description !== undefined && touched?.Description ? (
                   <>

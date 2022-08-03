@@ -2,8 +2,22 @@ import React, { useState } from "react";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 function CreateProb() {
+  const CustomInputComponent = ({
+    field, // { name, value, onChange, onBlur }
+    form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+    ...props
+  }) => (<>
+    {console.log(field)}
+    <div>
+      <ReactQuill theme="snow" className="h-80 mb-10"  value={field.value} d  onChange={field.onChange(field.name)}/>
+     
+    </div>
+  </>
+  );
   const [success, setSuccess] = useState(null);
   const hanldeSubmit = async (values) => {
     let testOutput = [];
@@ -94,9 +108,10 @@ function CreateProb() {
                 ) : null}
 
                 <Field
+                  component={CustomInputComponent}
                   name="Description"
                   placeholder="Description"
-                  className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
+                  className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full  mr-3 py-5 px-4 h-80 border border-gray-primary rounded mb-2"
                 />
                 {errors?.Description !== undefined && touched?.Description ? (
                   <>

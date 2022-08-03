@@ -7,6 +7,7 @@ function ContestProblem() {
   const [seconds, setSeconds] = useState(0);
   const [hour, setHour] = useState(0);
   const [activate, setActivate] = useState(0)
+  
   useEffect(() => {
     let myInterval = setInterval(() => {
       if (seconds > 0) {

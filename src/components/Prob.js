@@ -7,6 +7,7 @@ import Reaptcha from "reaptcha";
 import Editor from "@monaco-editor/react";
 import { defineTheme } from "../lib/defineTheme";
 import ThemeDropdown from "./themeDropDown";
+import { Markup } from 'interweave';
 import Comment from "./Comment"
 
 function Prob() {
@@ -242,7 +243,7 @@ function Prob() {
                       Description:{" "}
                     </strong>
                   </div>
-                  <p>{singleProb.desc}</p>
+                  <Markup content={singleProb.desc} />
                 </div>
                 <div className="mb-5   ">
                   <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
