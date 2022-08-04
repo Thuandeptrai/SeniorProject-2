@@ -7,6 +7,7 @@ import Reaptcha from "reaptcha";
 import Editor from "@monaco-editor/react";
 import { defineTheme } from "../lib/defineTheme";
 import ThemeDropdown from "../components/themeDropDown";
+import { Markup } from "interweave";
 
 function SubmitContest() {
   const [code, setCode] = React.useState("");
@@ -142,7 +143,13 @@ function SubmitContest() {
     { value: "python", label: "Python" },
     { value: "java", label: "Java" },
   ];
-
+  const HandleCopyText = ({ copyText }) => {
+    var dataConfigure = copyText
+      .replace(/<[^>]*>?/gm, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return navigator.clipboard.writeText(dataConfigure);
+  };
   return (
     <>
       {singleProb !== null ? (
@@ -247,38 +254,67 @@ function SubmitContest() {
                   <p>{singleProb.desc}</p>
                 </div>
                 <div className="mb-5   ">
-                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Input:
-                      </h5>
-                      {testInput.map((data, index) => (
-                        <>
-                          <p key={index} className="subpixel-antialiased">
-                            {"Testcase"} {index + 1}
-                            {": "} {data}
-                          </p>
-                        </>
-                      ))}
-                    </div>
-                  </div>
+                  {testInput.map((data, index) => (
+                    <>
+                      <div className=" p-8 border border-gray-100 shadow-xl rounded-xl">
+                        <div className=" text-gray-500 sm:pr-8 ">
+                          <div class="flex  justify-between">
+                            <div>
+                              <h5 className=" text-xl font-bold text-gray-900 ">
+                                Input:
+                              </h5>
+                              <p>Test Case {index + 1}:</p>
+                            </div>
+                            <div>
+                              <button
+                                className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                                onClick={() => {
+                                  HandleCopyText({ copyText: data });
+                                }}
+                              >
+                                <p className="text-sm font-medium leading-none text-white">
+                                  Copy
+                                </p>
+                              </button>
+                            </div>
+                          </div>
+                          <Markup content={data} />
+                        </div>
+                      </div>
+                    </>
+                  ))}
                 </div>
                 <div className="mb-5   ">
-                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Output:
-                      </h5>
-                      {testOutput.map((data, index) => (
-                        <>
-                          <p key={index} className="subpixel-antialiased">
-                            {"Testcase"} {index + 1}
-                            {": "} {data}
-                          </p>
-                        </>
-                      ))}
-                    </div>
-                  </div>
+                  {console.log(testOutput)}
+                  {testOutput.map((data, index) => (
+                    <>
+                      <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
+                        <div className="mt-4 text-gray-500 sm:pr-8 ">
+                          <div class="flex  justify-between">
+                            <div>
+                              <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                                Output:
+                              </h5>
+                              <p>Test Case {index + 1}:</p>
+                            </div>
+                            <div>
+                              <button
+                                className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                                onClick={() => {
+                                  HandleCopyText({ copyText: data });
+                                }}
+                              >
+                                <p className="text-sm font-medium leading-none text-white">
+                                  Copy
+                                </p>
+                              </button>
+                            </div>
+                          </div>
+                          <Markup content={data} />
+                        </div>
+                      </div>
+                    </>
+                  ))}
                 </div>
                 <div className="container px-3 mx-auto flex flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <div>

@@ -141,6 +141,13 @@ function Prob() {
     { value: "python", label: "Python" },
     { value: "java", label: "Java" },
   ];
+  const HandleCopyText =  ({ copyText }) => {
+    var dataConfigure = copyText
+      .replace(/<[^>]*>?/gm, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return navigator.clipboard.writeText(dataConfigure);
+  };
 
   return (
     <>
@@ -250,11 +257,26 @@ function Prob() {
                     <>
                       <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
                         <div className="mt-4 text-gray-500 sm:pr-8 ">
-                          <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                            Input:
-                          </h5>
-                          <p>Test Case {index + 1}:</p>
-                      
+                          <div class="flex  justify-between">
+                            <div>
+                              <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                                Input:
+                              </h5>
+                              <p>Test Case {index + 1}:</p>
+                            </div>
+                            <div>
+                              <button
+                                className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                                onClick={() => {
+                                  HandleCopyText({ copyText: data });
+                                }}
+                              >
+                                <p className="text-sm font-medium leading-none text-white">
+                                  Copy
+                                </p>
+                              </button>
+                            </div>
+                          </div>
                           <Markup content={data} />
                         </div>
                       </div>
@@ -266,10 +288,26 @@ function Prob() {
                     <>
                       <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
                         <div className="mt-4 text-gray-500 sm:pr-8 ">
-                          <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                            Output:
-                          </h5>
-                          <p>Test Case {index + 1}:</p>
+                          <div class="flex  justify-between">
+                            <div>
+                              <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                                Output:
+                              </h5>
+                              <p>Test Case {index + 1}:</p>
+                            </div>
+                            <div>
+                              <button
+                                className="mt-4 sm:mt-0 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded invisible  lg:visible"
+                                onClick={() => {
+                                  HandleCopyText({ copyText: data });
+                                }}
+                              >
+                                <p className="text-sm font-medium leading-none text-white">
+                                  Copy
+                                </p>
+                              </button>
+                            </div>
+                          </div>
                           <Markup content={data} />
                         </div>
                       </div>
