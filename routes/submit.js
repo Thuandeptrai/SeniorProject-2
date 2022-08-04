@@ -31,7 +31,10 @@ router.post("/", async (req, res) => {
   let correct = 0;
   try {
     for (let i = 0; i < myArry.length; i++) {
-      let stdin = myArry[i];
+      let stdin = myArry[i]
+        .replace(/<[^>]*>?/gm, " ")
+        .replace(/\s+/g, " ")
+        .trim();
       await axios
         .post(
           "https://www.jdoodle.com/engine/execute",
@@ -53,7 +56,13 @@ router.post("/", async (req, res) => {
         )
         .then(async (data) => {
           if (data.data.output !== null) {
-            if (data.data.output.replace(/(\r\n|\n|\r)/gm, "") === ans[i]) {
+            if (
+              data.data.output.replace(/(\r\n|\n|\r)/gm, " ").trim() ===
+              ans[i]
+                .replace(/<[^>]*>?/gm, " ")
+                .replace(/\s+/g, " ")
+                .trim()
+            ) {
               correct++;
             }
           }
