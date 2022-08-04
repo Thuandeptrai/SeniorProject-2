@@ -7,12 +7,12 @@ import Reaptcha from "reaptcha";
 import Editor from "@monaco-editor/react";
 import { defineTheme } from "../lib/defineTheme";
 import ThemeDropdown from "./themeDropDown";
-import { Markup } from 'interweave';
-import Comment from "./Comment"
+import { Markup } from "interweave";
+import Comment from "./Comment";
 
 function Prob() {
   const [code, setCode] = React.useState("");
-  const [lang, setLang] = React.useState( { value: 'cpp', label: 'C/C++' });
+  const [lang, setLang] = React.useState({ value: "cpp", label: "C/C++" });
   const [token, setToken] = React.useState(false);
   const [singleProb, setsingleProb] = React.useState(null);
   const [capchaRes, getcapchaRes] = React.useState(null);
@@ -103,7 +103,7 @@ function Prob() {
     await transport
       .post("http://localhost:3001/Testcompiler", {
         code,
-        lang:langsubmit,
+        lang: langsubmit,
         problemId: id.id,
         captcha: capchaRes,
       })
@@ -117,7 +117,7 @@ function Prob() {
       .catch((err) => {
         /* not hit since no 401 */
       });
-      setProcessing(false);
+    setProcessing(false);
   };
   function handleEditorChange(value, event) {
     setCode(value);
@@ -137,11 +137,11 @@ function Prob() {
     );
   }, []);
   const options = [
-    { value: 'cpp', label: 'C/C++' },
-    { value: 'python', label: 'Python' },
-    { value: 'java', label: 'Java' },
+    { value: "cpp", label: "C/C++" },
+    { value: "python", label: "Python" },
+    { value: "java", label: "Java" },
   ];
-  
+
   return (
     <>
       {singleProb !== null ? (
@@ -246,55 +246,53 @@ function Prob() {
                   <Markup content={singleProb.desc} />
                 </div>
                 <div className="mb-5   ">
-                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Input:
-                      </h5>
-                      {testInput.map((data, index) => (
-                        <>
-                        <p>Test Case {index+1}:</p>
-
-                        <Markup content={data} />
-                        </>
-                      ))}
-                    </div>
-                  </div>
+                  {testInput.map((data, index) => (
+                    <>
+                      <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
+                        <div className="mt-4 text-gray-500 sm:pr-8 ">
+                          <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                            Input:
+                          </h5>
+                          <p>Test Case {index + 1}:</p>
+                      
+                          <Markup content={data} />
+                        </div>
+                      </div>
+                    </>
+                  ))}
                 </div>
                 <div className="mb-5   ">
-                  <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
-                    <div className="mt-4 text-gray-500 sm:pr-8 ">
-                      <h5 className="mt-4 text-xl font-bold text-gray-900 ">
-                        Output:
-                      </h5>
-                      {testOutput.map((data, index) => (
-                        <>
-                        <p>Test Case {index+1}:</p>
-                         <Markup content={data} />
-                        </>
-                      ))}
-                    </div>
-                  </div>
+                  {testOutput.map((data, index) => (
+                    <>
+                      <div className="my-5  p-8 border border-gray-100 shadow-xl rounded-xl">
+                        <div className="mt-4 text-gray-500 sm:pr-8 ">
+                          <h5 className="mt-4 text-xl font-bold text-gray-900 ">
+                            Output:
+                          </h5>
+                          <p>Test Case {index + 1}:</p>
+                          <Markup content={data} />
+                        </div>
+                      </div>
+                    </>
+                  ))}
                 </div>
                 <div className="container px-3 mx-auto flex flex-row items-start lg:items-center justify-between pb-4 border-b border-gray-300">
                   <div>
-
-                 
-
-                  <Select
-                    onChange={setLang}
-                    options={options}
-                    value={lang}
-                    defaultValue={lang}
-                    className="focus:outline-none bg-transparent ml-1"
-                    isSearchable={false}
-                  />
-                   
+                    <Select
+                      onChange={setLang}
+                      options={options}
+                      value={lang}
+                      defaultValue={lang}
+                      className="focus:outline-none bg-transparent ml-1"
+                      isSearchable={false}
+                    />
                   </div>
 
                   <div>
-
-                  <ThemeDropdown handleThemeChange={handleThemeChange} theme={theme} />
+                    <ThemeDropdown
+                      handleThemeChange={handleThemeChange}
+                      theme={theme}
+                    />
                   </div>
                 </div>
                 <Editor
@@ -352,17 +350,12 @@ function Prob() {
                     >
                       {processing ? "Loading" : "Submit"}
                     </button>
-                 
-
                   </div>
-                  
                 </div>
                 <Comment commentId={id} />
               </div>
             </div>
-         
           </div>
-            
         </>
       ) : (
         <div>Loading</div>
