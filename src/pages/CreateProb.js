@@ -2,23 +2,55 @@ import React, { useState } from "react";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 function CreateProb() {
   const CustomInputComponent = ({
     field, // { name, value, onChange, onBlur }
     form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
     ...props
-  }) => (<>
-    {console.log(field)}
-    <div>
-      <ReactQuill theme="snow" className="h-80 mb-10"  value={field.value} d  onChange={field.onChange(field.name)}/>
-    { console.log(field.value.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim()
-)}
-     
-    </div>
-  </>
+  }) => (
+    <>
+      <div>
+        <ReactQuill
+          theme="snow"
+          className="h-80 mb-10"
+          value={field.value}
+          d
+          onChange={field.onChange(field.name)}
+        />
+        {console.log(
+          field.value
+            .replace(/<[^>]*>?/gm, " ")
+            .replace(/\s+/g, " ")
+            .trim()
+        )}
+      </div>
+    </>
+  );
+  const CustomInputComponentForInput = ({
+    field, // { name, value, onChange, onBlur }
+    form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+    ...props
+  }) => (
+    <>
+      <div>
+        <ReactQuill
+          theme="snow"
+          className="h-40 mb-20"
+          value={field.value}
+          d
+          onChange={field.onChange(field.name)}
+        />
+        {console.log(
+          field.value
+            .replace(/<[^>]*>?/gm, " ")
+            .replace(/\s+/g, " ")
+            .trim()
+        )}
+      </div>
+    </>
   );
   const [success, setSuccess] = useState(null);
   const hanldeSubmit = async (values) => {
@@ -127,23 +159,25 @@ function CreateProb() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
+                        <p className="font-bold"  >Visible TestCase:</p>
                         {values.testInputAndOutPut.length > 0 &&
                           values.testInputAndOutPut.map(
                             (testInputAndOutPut, index) => (
                               <>
                                 <div key={index} className="my-3">
+                                  <p>Test Input {index+1} :</p>
                                   <Field
-                                  component={CustomInputComponent}
+                                    component={CustomInputComponentForInput}
                                     name={`testInputAndOutPut.${index}.testInput`}
                                     placeholder="Test Input"
                                     type="text"
                                     className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                   />
+                                  <p>Test Output {index+1} :</p>
 
                                   <Field
                                     name={`testInputAndOutPut.${index}.testOutput`}
-                                  component={CustomInputComponent}
-
+                                    component={CustomInputComponentForInput}
                                     placeholder="Test Output"
                                     type="text"
                                     className="text-sm  focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mt-3 mb-2"
@@ -200,19 +234,25 @@ function CreateProb() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
+                      <p className="font-bold" >Invisilbe TestCase:</p>
                         {values.realtInputAndOutPut.length > 0 &&
                           values.realtInputAndOutPut.map(
                             (realtInputAndOutPut, index) => (
                               <>
                                 <div key={index}>
+                                  <p>Real Input {index+1} :</p>
                                   <Field
+                                    component={CustomInputComponentForInput}
+
                                     name={`realtInputAndOutPut.${index}.realInput`}
                                     placeholder="Test Input"
                                     type="text"
                                     className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                   />
-
+                                  <p>Real Output {index+1}:</p>
                                   <Field
+                                    component={CustomInputComponentForInput}
+
                                     name={`realtInputAndOutPut.${index}.realOutput`}
                                     placeholder="Test Output"
                                     type="text"
