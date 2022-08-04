@@ -93,8 +93,9 @@ function Comment({ commentId }) {
           ></textarea>
         </label>
         <button
-          className="px-3 py-2 text-sm text-zinc-50 lg:font-bold lg:text-xl bg-blue-600 rounded"
+          className={`${comment.length === 0 ? "opacity-50  cursor-not-allowed" : null} px-3 py-2 text-sm text-zinc-50 lg:font-bold lg:text-xl bg-blue-600 rounded`}
           onClick={handleComment}
+          disabled={comment.length === 0 ? true : false}
         >
           Comment
         </button>

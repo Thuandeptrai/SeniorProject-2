@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
@@ -6,8 +6,99 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 function CreateProb() {
+  const quillRef = useRef();
+  const imageHandler = (e) => {
+    const editor = quillRef.current.getEditor();
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (/^image\//.test(file.type)) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "yhddnraa");
+
+        const result =await fetch(
+          "https://api.cloudinary.com/v1_1/appcuathuandeptrai/image/upload",
+          {
+            mode: "cors",
+            method: "post",
+            body: formData,
+          }
+        ).then((res) => res.json());
+        console.log(result);
+        editor.insertEmbed(editor.getSelection(), "image",result.secure_url);
+      } else {
+      }
+    };
+  };
+  const modules = useMemo(
+    () => ({
+      toolbar: {
+        container: [
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+          ["bold", "italic", "underline", "strike"],
+          [
+            { list: "ordered" },
+            { list: "bullet" },
+            { indent: "-1" },
+            { indent: "+1" },
+          ],
+          ["image", "link"],
+          [
+            {
+              color: [
+                "#000000",
+                "#e60000",
+                "#ff9900",
+                "#ffff00",
+                "#008a00",
+                "#0066cc",
+                "#9933ff",
+                "#ffffff",
+                "#facccc",
+                "#ffebcc",
+                "#ffffcc",
+                "#cce8cc",
+                "#cce0f5",
+                "#ebd6ff",
+                "#bbbbbb",
+                "#f06666",
+                "#ffc266",
+                "#ffff66",
+                "#66b966",
+                "#66a3e0",
+                "#c285ff",
+                "#888888",
+                "#a10000",
+                "#b26b00",
+                "#b2b200",
+                "#006100",
+                "#0047b2",
+                "#6b24b2",
+                "#444444",
+                "#5c0000",
+                "#663d00",
+                "#666600",
+                "#003700",
+                "#002966",
+                "#3d1466",
+              ],
+            },
+          ],
+        ],
+        handlers: {
+          image: imageHandler,
+        },
+      },
+    }),
+    []
+  );
   const CustomInputComponent = ({
-    field, // { name, value, onChange, onBlur }
+    field, // { name, value, onChange, onBlur }`
     form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
     ...props
   }) => (
@@ -15,17 +106,23 @@ function CreateProb() {
       <div>
         <ReactQuill
           theme="snow"
+          modules={modules}
           className="h-80 mb-10"
           value={field.value}
-          d
+          ref={quillRef}
           onChange={field.onChange(field.name)}
         />
-        {console.log(
-          field.value
-            .replace(/<[^>]*>?/gm, " ")
-            .replace(/\s+/g, " ")
-            .trim()
-        )}
+        {field.value
+          .replace(/<[^>]*>?/gm, " ")
+          .replace(/\s+/g, " ")
+          .trim().length === 0 ? (
+          <>
+            <div className="p-4 mt-2 text-red-700  border rounded border-red-900/10 bg-red-50">
+              {" "}
+              This is required a filed
+            </div>{" "}
+          </>
+        ) : null}
       </div>
     </>
   );
@@ -43,12 +140,17 @@ function CreateProb() {
           d
           onChange={field.onChange(field.name)}
         />
-        {console.log(
-          field.value
-            .replace(/<[^>]*>?/gm, " ")
-            .replace(/\s+/g, " ")
-            .trim()
-        )}
+        {field.value
+          .replace(/<[^>]*>?/gm, " ")
+          .replace(/\s+/g, " ")
+          .trim().length === 0 ? (
+          <>
+            <div className="p-4 mt-2 text-red-700  border rounded border-red-900/10 bg-red-50">
+              {" "}
+              This is required a filed
+            </div>{" "}
+          </>
+        ) : null}
       </div>
     </>
   );
@@ -69,22 +171,31 @@ function CreateProb() {
     const creatProb = axios.create({
       withCredentials: true,
     });
-    await creatProb
-      .post("http://localhost:3001/createProblem", {
-        title: values.Title,
-        desc: values.Description,
-        testInput,
-        testOutput,
-        realInput,
-        realOutput,
-        isPrivate: values.isPrivate,
-      })
-      .then((data) => {
-        setSuccess(true);
-      })
-      .catch((err) => {
-        setSuccess(false);
-      });
+
+    if (
+      values.Description.replace(/<[^>]*>?/gm, " ")
+        .replace(/\s+/g, " ")
+        .trim().length !== 0
+    ) {
+      await creatProb
+        .post("http://localhost:3001/createProblem", {
+          title: values.Title,
+          desc: values.Description,
+          testInput,
+          testOutput,
+          realInput,
+          realOutput,
+          isPrivate: values.isPrivate,
+        })
+        .then((data) => {
+          setSuccess(true);
+        })
+        .catch((err) => {
+          setSuccess(false);
+        });
+    } else {
+      setSuccess(false);
+    }
   };
   return (
     <>
@@ -115,7 +226,6 @@ function CreateProb() {
             ],
           }}
           onSubmit={async (values, { resetForm, setSubmitting }) => {
-            console.log(values);
             try {
               await hanldeSubmit(values);
             } finally {
@@ -159,13 +269,13 @@ function CreateProb() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
-                        <p className="font-bold"  >Visible TestCase:</p>
+                        <p className="font-bold">Visible TestCase:</p>
                         {values.testInputAndOutPut.length > 0 &&
                           values.testInputAndOutPut.map(
                             (testInputAndOutPut, index) => (
                               <>
                                 <div key={index} className="my-3">
-                                  <p>Test Input {index+1} :</p>
+                                  <p>Test Input {index + 1} :</p>
                                   <Field
                                     component={CustomInputComponentForInput}
                                     name={`testInputAndOutPut.${index}.testInput`}
@@ -173,7 +283,7 @@ function CreateProb() {
                                     type="text"
                                     className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                   />
-                                  <p>Test Output {index+1} :</p>
+                                  <p>Test Output {index + 1} :</p>
 
                                   <Field
                                     name={`testInputAndOutPut.${index}.testOutput`}
@@ -234,25 +344,23 @@ function CreateProb() {
                   {({ insert, remove, push }) => (
                     <>
                       <div>
-                      <p className="font-bold" >Invisilbe TestCase:</p>
+                        <p className="font-bold">Invisilbe TestCase:</p>
                         {values.realtInputAndOutPut.length > 0 &&
                           values.realtInputAndOutPut.map(
                             (realtInputAndOutPut, index) => (
                               <>
                                 <div key={index}>
-                                  <p>Real Input {index+1} :</p>
+                                  <p>Real Input {index + 1} :</p>
                                   <Field
                                     component={CustomInputComponentForInput}
-
                                     name={`realtInputAndOutPut.${index}.realInput`}
                                     placeholder="Test Input"
                                     type="text"
                                     className="text-sm focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mb-2"
                                   />
-                                  <p>Real Output {index+1}:</p>
+                                  <p>Real Output {index + 1}:</p>
                                   <Field
                                     component={CustomInputComponentForInput}
-
                                     name={`realtInputAndOutPut.${index}.realOutput`}
                                     placeholder="Test Output"
                                     type="text"
