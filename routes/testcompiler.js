@@ -54,6 +54,13 @@ router.post("/", async (req, res) => {
           }
         )
         .then(async (data) => {
+          console.log(data.data.output.replace(/(\r\n|\n|\r)/gm, " ").trim());
+          console.log(
+            ans[i]
+              .replace(/<[^>]*>?/gm, " ")
+              .replace(/\s+/g, " ")
+              .trim()
+          );
           if (data.data.output !== null) {
             if (
               data.data.output.replace(/(\r\n|\n|\r)/gm, " ").trim() ===
