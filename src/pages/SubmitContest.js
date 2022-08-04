@@ -92,7 +92,7 @@ function SubmitContest() {
       setLangsubmit("java");
     }
     if (lang.value === "cpp") {
-      setLangsubmit("cpp");
+      setLangsubmit("cpp17");
     }
   }, [lang]);
   const handleClick = async () => {

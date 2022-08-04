@@ -14,6 +14,8 @@ function CreateProb() {
     {console.log(field)}
     <div>
       <ReactQuill theme="snow" className="h-80 mb-10"  value={field.value} d  onChange={field.onChange(field.name)}/>
+    { console.log(field.value.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim()
+)}
      
     </div>
   </>
@@ -131,6 +133,7 @@ function CreateProb() {
                               <>
                                 <div key={index} className="my-3">
                                   <Field
+                                  component={CustomInputComponent}
                                     name={`testInputAndOutPut.${index}.testInput`}
                                     placeholder="Test Input"
                                     type="text"
@@ -139,6 +142,8 @@ function CreateProb() {
 
                                   <Field
                                     name={`testInputAndOutPut.${index}.testOutput`}
+                                  component={CustomInputComponent}
+
                                     placeholder="Test Output"
                                     type="text"
                                     className="text-sm  focus:ring-gray-700 focus:border-gray-400 text-gray-base w-full mr-3 py-5 px-4 h-2 border border-gray-primary rounded mt-3 mb-2"
