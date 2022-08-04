@@ -7,10 +7,7 @@ export const CreateProbSchema = yup.object().shape({
     .max(30, "Username must be 30 characters at most!")
     .required("Username is a required field!")
     .strict(),
-  Description: yup
-    .string()
-    .min(3, "Description must be at least 3 characters long!")
-    .required("Description is a required field!"),
+ 
   testInputAndOutPut: yup.array().of(
     yup.object().shape({
       testOutput: yup.string().required("Test Output is a required field!"),

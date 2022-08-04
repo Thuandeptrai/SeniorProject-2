@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from "react";
 import { Formik, Field, Form, FieldArray } from "formik";
 import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 function CreateProb() {
@@ -21,7 +21,7 @@ function CreateProb() {
         formData.append("file", file);
         formData.append("upload_preset", "yhddnraa");
 
-        const result =await fetch(
+        const result = await fetch(
           "https://api.cloudinary.com/v1_1/appcuathuandeptrai/image/upload",
           {
             mode: "cors",
@@ -29,8 +29,7 @@ function CreateProb() {
             body: formData,
           }
         ).then((res) => res.json());
-        console.log(result);
-        editor.insertEmbed(editor.getSelection(), "image",result.secure_url);
+        editor.insertEmbed(editor.getSelection(), "image", result.secure_url);
       } else {
       }
     };
@@ -90,6 +89,7 @@ function CreateProb() {
             },
           ],
         ],
+
         handlers: {
           image: imageHandler,
         },
@@ -107,22 +107,12 @@ function CreateProb() {
         <ReactQuill
           theme="snow"
           modules={modules}
-          className="h-80 mb-10"
+          className="h-auto mb-10"
           value={field.value}
           ref={quillRef}
           onChange={field.onChange(field.name)}
         />
-        {field.value
-          .replace(/<[^>]*>?/gm, " ")
-          .replace(/\s+/g, " ")
-          .trim().length === 0 ? (
-          <>
-            <div className="p-4 mt-2 text-red-700  border rounded border-red-900/10 bg-red-50">
-              {" "}
-              This is required a filed
-            </div>{" "}
-          </>
-        ) : null}
+   
       </div>
     </>
   );
@@ -172,11 +162,7 @@ function CreateProb() {
       withCredentials: true,
     });
 
-    if (
-      values.Description.replace(/<[^>]*>?/gm, " ")
-        .replace(/\s+/g, " ")
-        .trim().length !== 0
-    ) {
+
       await creatProb
         .post("http://localhost:3001/createProblem", {
           title: values.Title,
@@ -193,9 +179,7 @@ function CreateProb() {
         .catch((err) => {
           setSuccess(false);
         });
-    } else {
-      setSuccess(false);
-    }
+   
   };
   return (
     <>
