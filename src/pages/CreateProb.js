@@ -4,7 +4,6 @@ import { CreateProbSchema } from "../validate/validation";
 import axios from "axios";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-
 function CreateProb() {
   const quillRef = useRef();
   const imageHandler = (e) => {
@@ -39,12 +38,20 @@ function CreateProb() {
       toolbar: {
         container: [
           [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ["bold", "italic", "underline", "strike"],
+          ["bold", "italic", "underline", "strike", "color", "list"],
           [
             { list: "ordered" },
             { list: "bullet" },
             { indent: "-1" },
             { indent: "+1" },
+            {
+              direction: "rtl",
+            },
+            {
+              script: "sub",
+            },
+            { script: "super" },
+            { align: [] },
           ],
           ["image", "link"],
           [
@@ -94,9 +101,11 @@ function CreateProb() {
           image: imageHandler,
         },
       },
+      
     }),
     []
   );
+
   const CustomInputComponent = ({
     field, // { name, value, onChange, onBlur }`
     form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
@@ -112,7 +121,7 @@ function CreateProb() {
           ref={quillRef}
           onChange={field.onChange(field.name)}
         />
-   
+        {console.log(field)}
       </div>
     </>
   );
@@ -162,24 +171,22 @@ function CreateProb() {
       withCredentials: true,
     });
 
-
-      await creatProb
-        .post("http://localhost:3001/createProblem", {
-          title: values.Title,
-          desc: values.Description,
-          testInput,
-          testOutput,
-          realInput,
-          realOutput,
-          isPrivate: values.isPrivate,
-        })
-        .then((data) => {
-          setSuccess(true);
-        })
-        .catch((err) => {
-          setSuccess(false);
-        });
-   
+    await creatProb
+      .post("http://localhost:3001/createProblem", {
+        title: values.Title,
+        desc: values.Description,
+        testInput,
+        testOutput,
+        realInput,
+        realOutput,
+        isPrivate: values.isPrivate,
+      })
+      .then((data) => {
+        setSuccess(true);
+      })
+      .catch((err) => {
+        setSuccess(false);
+      });
   };
   return (
     <>

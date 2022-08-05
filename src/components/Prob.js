@@ -1,12 +1,14 @@
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import Reaptcha from "reaptcha";
 import Editor from "@monaco-editor/react";
 import { defineTheme } from "../lib/defineTheme";
 import ThemeDropdown from "./themeDropDown";
+import ReactQuill, { Quill } from "react-quill";
+
 import { Markup } from "interweave";
 import Comment from "./Comment";
 
@@ -25,6 +27,7 @@ function Prob() {
   const [testOutput, setTestOutput] = useState([]);
   const [processing, setProcessing] = useState(null);
   const [theme, setTheme] = useState("cobalt");
+
   const id = useParams();
   let refContainer = useRef(null);
 
@@ -34,6 +37,9 @@ function Prob() {
     handleClick();
     setToken(false);
   };
+  const modules = {
+    toolbar: false
+  }
   const history = useNavigate();
 
   const transport = axios.create({
@@ -141,7 +147,7 @@ function Prob() {
     { value: "python", label: "Python" },
     { value: "java", label: "Java" },
   ];
-  const HandleCopyText =  ({ copyText }) => {
+  const HandleCopyText = ({ copyText }) => {
     var dataConfigure = copyText
       .replace(/<[^>]*>?/gm, " ")
       .replace(/\s+/g, " ")
@@ -250,7 +256,13 @@ function Prob() {
                       Description:{" "}
                     </strong>
                   </div>
-                  <Markup content={singleProb.desc} />
+                  <ReactQuill
+                    theme="snow"
+                    className="h-auto  mb-10"
+                    value={singleProb.desc}
+                    modules={modules}
+                    readOnly={true}
+                  />
                 </div>
                 <div className="mb-5   ">
                   {testInput.map((data, index) => (
